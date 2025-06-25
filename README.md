@@ -32,7 +32,7 @@ git init
 
 ###  원격 저장소 연결
 ```bash
-git remote add origin https://github.com/사용자이름/저장소이름.git
+git remote add origin https://github.com/chuawj/hesei_IT_Study.git
 ```
 
 ###  파일 추가 & 커밋
