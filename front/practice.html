@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>수강신청 연습</title>
+  <link rel="stylesheet" href="../common/style.css">
+  <link rel="stylesheet" href="../common/jquery-ui-1.9.2.custom.min.css">
+  <script src="../common/jquery-1.8.3.js"></script>
+  <script src="../common/jquery-ui-1.9.2.custom.min.js"></script>
+  <style>
+    .container { max-width: 700px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #ccc; padding: 32px; }
+    h1 { text-align: center; margin-bottom: 32px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #f0f0f0; }
+    .btn { padding: 6px 16px; border: none; background: #1976d2; color: #fff; border-radius: 4px; cursor: pointer; }
+    .btn:disabled { background: #aaa; }
+    #my-courses { margin-top: 32px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>수강신청 연습</h1>
+    <table id="course-list">
+      <thead>
+        <tr><th>과목명</th><th>교수</th><th>정원</th><th>신청</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>웹프로그래밍</td><td>홍길동</td><td><span class="capacity">2</span></td><td><button class="btn apply">신청</button></td></tr>
+        <tr><td>자료구조</td><td>이몽룡</td><td><span class="capacity">2</span></td><td><button class="btn apply">신청</button></td></tr>
+        <tr><td>운영체제</td><td>성춘향</td><td><span class="capacity">2</span></td><td><button class="btn apply">신청</button></td></tr>
+      </tbody>
+    </table>
+    <div id="my-courses">
+      <h2>내 수강 목록</h2>
+      <ul id="my-list"></ul>
+    </div>
+  </div>
+  <script>
+    $(function() {
+      $('.apply').click(function() {
+        var row = $(this).closest('tr');
+        var subject = row.find('td:first').text();
+        var prof = row.find('td:nth-child(2)').text();
+        var capCell = row.find('.capacity');
+        var cap = parseInt(capCell.text(), 10);
+        if (cap > 0) {
+          capCell.text(cap - 1);
+          $('#my-list').append('<li>' + subject + ' (' + prof + ')</li>');
+          if (cap - 1 === 0) $(this).prop('disabled', true).text('마감');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

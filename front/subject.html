@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>교과목조회</title>
+  <link rel="stylesheet" href="../common/style.css">
+  <style>
+    table.tableList2, .tableList2 th, .tableList2 td {
+      font-size: 1.1em !important;
+      padding: 12px 8px !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="subject-wrap">
+    <h2>교과목 조회</h2>
+    <div class="search-bar" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <label style="font-weight:bold;">카테고리</label>
+      <select id="category-select" style="min-width:140px;height:32px;font-size:1em;">
+        <option value="major">전공/학과 조회</option>
+        <option value="subject">과목 검색</option>
+        <option value="type">이수 구분</option>
+      </select>
+      <span id="major-area" style="display:inline-flex;align-items:center;gap:8px;">
+        <label style="font-weight:bold;">학부</label>
+        <select id="dept-select" style="min-width:120px;height:32px;font-size:1em;"></select>
+        <label style="font-weight:bold;">학과</label>
+        <select id="major-select" style="min-width:120px;height:32px;font-size:1em;"></select>
+      </span>
+      <input type="text" id="subject-keyword" placeholder="과목명 검색" style="height:32px;font-size:1em;width:180px;">
+      <select id="type-select" style="min-width:120px;height:32px;font-size:1em;display:none;">
+        <option value="">전체</option>
+        <option value="전공필수">전공필수</option>
+        <option value="전공기초">전공기초</option>
+      </select>
+      <button id="search-btn" style="height:34px;font-size:1em;padding:0 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">조회</button>
+    </div>
+  <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
+  <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th></tr></thead>
+  <tbody id="subject-tbody"></tbody>
+  </table>
+    <script>
+    const categoryData = [
+      { category:'신학과', depts:[{ name:'신학과', majors:['신학과'] }] },
+      { category:'사회과학부', depts:[{ name:'사회과학부', majors:['미디어영상광고학과','경영학과','관광경영학과'] }] },
+      { category:'공공서비스학부', depts:[{ name:'공공서비스학부', majors:['경찰행정학과','사회복지학과'] }] },
+      { category:'언어학부', depts:[{ name:'언어학부', majors:['영어학과','중국어학과'] }] },
+      { category:'IT학부', depts:[{ name:'IT학부', majors:['컴퓨터공학과','융합보안학과','IT학부'] }] },
+      { category:'간호학과', depts:[{ name:'간호학과', majors:['간호학과'] }] },
+      { category:'디자인학부', depts:[{ name:'디자인학부', majors:['시각정보디자인학과','실내건축디자인학과','섬유패션디자인학과'] }] },
+      { category:'예술학부', depts:[{ name:'예술학부', majors:['음악학과','공연예술학과'] }] },
+      { category:'자유전공학부', depts:[{ name:'자유전공학부', majors:['자유전공학부'] }] }
+    ];
+    // 예시 과목 데이터(일부만,추가예정)
+    const subjects = [
+      { dept:'IT학부', major:'IT학부', year:1, name:'IT학부세미나', code:'25103', type:'전공기초', credit:3, cap:30, prof:'공삼공' },
+      { dept:'IT학부', major:'컴퓨터공학과', year:1, name:'웹프로그래밍', code:'19504', type:'전공필수', credit:3, cap:30, prof:'홍길동' },
+      { dept:'IT학부', major:'컴퓨터공학과', year:1, name:'자료구조', code:'19505', type:'전공필수', credit:3, cap:30, prof:'이몽룡' },
+      { dept:'IT학부', major:'융합보안학과', year:1, name:'정보보안개론', code:'19509', type:'전공기초', credit:3, cap:30, prof:'김보안' },
+      { dept:'사회과학부', major:'미디어영상광고학과', year:1, name:'광고학개론', code:'21001', type:'전공기초', credit:3, cap:30, prof:'박광고' },
+      { dept:'사회과학부', major:'경영학과', year:1, name:'경영학원론', code:'21002', type:'전공기초', credit:3, cap:30, prof:'최경영' },
+      { dept:'공공서비스학부', major:'경찰행정학과', year:1, name:'경찰학개론', code:'22001', type:'전공기초', credit:3, cap:30, prof:'이경찰' },
+      { dept:'언어학부', major:'영어학과', year:1, name:'영문법', code:'23001', type:'전공기초', credit:3, cap:30, prof:'정영문' },
+      { dept:'디자인학부', major:'시각정보디자인학과', year:1, name:'디자인기초', code:'24001', type:'전공기초', credit:3, cap:30, prof:'김디자인' }
+    ];
+    // 카테고리/학부/학과 옵션 생성
+    const categorySelect = document.getElementById('category-select');
+    const deptSelect = document.getElementById('dept-select');
+    const majorSelect = document.getElementById('major-select');
+    const typeSelect = document.getElementById('type-select');
+    const majorArea = document.getElementById('major-area');
+    // 학부/학과 옵션
+    function updateDeptOptions() {
+      deptSelect.innerHTML = '';
+      categoryData.forEach(cat => {
+        cat.depts.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.name; opt.textContent = d.name;
+          deptSelect.appendChild(opt);
+        });
+      });
+      updateMajorOptions();
+    }
+    function updateMajorOptions() {
+      majorSelect.innerHTML = '';
+      let found = false;
+      categoryData.forEach(cat => {
+        cat.depts.forEach(d => {
+          if(d.name === deptSelect.value) {
+            d.majors.forEach(m => {
+              const opt = document.createElement('option');
+              opt.value = m; opt.textContent = m;
+              majorSelect.appendChild(opt);
+            });
+            found = true;
+          }
+        });
+      });
+      if(!found) {
+        const opt = document.createElement('option');
+        opt.value = ''; opt.textContent = '전체';
+        majorSelect.appendChild(opt);
+      }
+    }
+    deptSelect.onchange = updateMajorOptions;
+    updateDeptOptions();
+    categorySelect.onchange = function() {
+      if(categorySelect.value === 'major') {
+        majorArea.style.display = '';
+        typeSelect.style.display = 'none';
+        document.getElementById('subject-keyword').style.display = '';
+      } else if(categorySelect.value === 'subject') {
+        majorArea.style.display = 'none';
+        typeSelect.style.display = 'none';
+        document.getElementById('subject-keyword').style.display = '';
+      } else if(categorySelect.value === 'type') {
+        majorArea.style.display = 'none';
+        typeSelect.style.display = '';
+        document.getElementById('subject-keyword').style.display = 'none';
+      }
+    };
+    categorySelect.dispatchEvent(new Event('change'));
+    function renderTable() {
+      let filtered = subjects;
+      if(categorySelect.value === 'major') {
+        const dept = deptSelect.value;
+        const major = majorSelect.value;
+        filtered = filtered.filter(s =>
+          s.dept === dept &&
+          s.major === major
+        );
+      } else if(categorySelect.value === 'subject') {
+        const keyword = document.getElementById('subject-keyword').value.trim();
+        if(keyword) filtered = filtered.filter(s => s.name.includes(keyword));
+      } else if(categorySelect.value === 'type') {
+        const type = typeSelect.value;
+        if(type) filtered = filtered.filter(s => s.type === type);
+      }
+      const tbody = document.getElementById('subject-tbody');
+      tbody.innerHTML = '';
+      filtered.forEach((s,i) => {
+        const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${i+1}</td><td>${s.dept}</td><td>${s.major}</td><td>${s.year}</td><td>${s.name}</td><td>${s.code}</td><td>${s.type}</td><td>${s.credit}</td><td>${s.cap||''}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    // 예비수강신청 내역 관리(로컬스토리지)
+    function getBasket() {
+      return JSON.parse(localStorage.getItem('basketList')||'[]');
+    }
+    function setBasket(list) {
+      localStorage.setItem('basketList', JSON.stringify(list));
+    }
+    function addToBasket(subject) {
+      let list = getBasket();
+      if(list.find(s=>s.code===subject.code)) return;
+      list.push(subject);
+      setBasket(list);
+    }
+    document.getElementById('search-btn').onclick = renderTable;
+    renderTable();
+    </script>
+  </div>
+</body>
+</html>
