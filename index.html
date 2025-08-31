@@ -21,15 +21,18 @@
   <div style="padding:10px 20px 0 20px;">
     <div style="display:flex;align-items:flex-start;">
       <div style="min-width:320px;max-width:340px;">
-        <img src="common/logo.png" alt="한세대학교" style="margin-bottom:10px;">
+        <a href="http://sugangnew.hansei.ac.kr:8808/main.html?fake=Wed%20Feb%2026%202025%2019:41:52%20GMT+0900%20(%C7%D1%B1%B9%20%C7%A5%C1%D8%BD%C3)" target="_blank" style="display:inline-flex;align-items:center;text-decoration:none;gap:10px;margin-bottom:10px;">
+          <img src="common/logo.png" alt="한세대학교" style="margin-bottom:0;">
+        </a>
         <div id="timer-setup" style="margin-top:18px;padding:14px 12px 12px 12px;border:1px solid #1976d2;border-radius:8px;background:#f7faff;display:flex;align-items:center;gap:10px;max-width:290px;">
-          <b style="margin-right:10px;color:#1976d2;">수강신청 오픈 타이머</b>
+          <b style="margin-right:10px;color:#1976d2;">수강신청 오픈<br>타이머</b>
           <label style="font-size:0.98em;">시 <input type="number" id="timer-hour" min="0" max="23" value="0" style="width:36px;"></label>
           <label style="font-size:0.98em;">분 <input type="number" id="timer-min" min="0" max="59" value="0" style="width:36px;"></label>
           <label style="font-size:0.98em;">초 <input type="number" id="timer-sec" min="0" max="59" value="0" style="width:36px;"></label>
         </div>
         <div style="margin-top:6px;max-width:290px;display:flex;align-items:center;gap:8px;">
           <button id="set-timer-btn" style="background:#1976d2;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:1em;">타이머 설정</button>
+          <button id="reset-btn" style="background:#d32f2f;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:1em;">초기화</button>
           <span id="timer-status" style="color:#1976d2;font-weight:bold;font-size:1em;"></span>
         </div>
       </div>
@@ -42,11 +45,11 @@
           <button class="tab-btn" data-page="history" style="border:1px solid #bbb; border-bottom:none; background:#fff; padding:8px 18px; font-size:1em; cursor:pointer;">수강내역 조회</button>
         </div>
 
-        <div style="border:1px solid #bbb; border-radius:0 0 8px 8px; min-height:650px; background:#fff;">
-          <iframe id="main-frame" src="front/notice.html" style="width:100%; height:800px; border:none;"></iframe>
+        <div style="border:1px solid #bbb; border-radius:0 0 8px 8px; min-height:700px; background:#fff;">
+          <iframe id="main-frame" src="front/notice.html" style="width:100%; height:700px; border:none;"></iframe>
         </div>
         <div style="margin-top:18px;">
-          <div style="border:1px solid #bbb; border-radius:8px; background:#fafafa; padding:18px; font-size:1.2em; height:80px; overflow-y:auto;">
+          <div style="border:1px solid #bbb; border-radius:8px; background:#fafafa; padding:18px; font-size:1.2em; height:40px; overflow-y:auto;">
             <b>수강신청 연습 시스템에 오신 것을 환영합니다!</b>
           </div>
         </div>
@@ -62,12 +65,6 @@
       register: 'front/register.html',
       history: 'front/history.html'
     };
-
-    const tabHeightMap = {
-      subject: 800,
-      basket: 800,
-      register: 800
-    };
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = function() {
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -76,11 +73,7 @@
           localStorage.setItem('registerQueueRequired', 'true');
         }
         mainFrame.src = tabMap[btn.dataset.page];
-        if (tabHeightMap[btn.dataset.page]) {
-          mainFrame.style.height = tabHeightMap[btn.dataset.page] + 'px';
-        } else {
-          mainFrame.style.height = '520px';
-        }
+  mainFrame.style.height = '700px';
       }
     });
 
@@ -140,6 +133,20 @@
     };
     registerBtn.disabled = true;
     registerBtn.style.opacity = 0.5;
+    // 초기화 버튼 기능
+    document.getElementById('reset-btn').onclick = function() {
+      localStorage.removeItem('registerList');
+      localStorage.removeItem('basketList');
+      registerBtn.disabled = true;
+      registerBtn.style.opacity = 0.5;
+  // 공지사항 탭으로 이동
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.tab-btn[data-page="notice"]').classList.add('active');
+  mainFrame.src = tabMap['notice'];
+  mainFrame.style.height = '520px';
+      timerStatus.textContent = '초기화 완료!';
+      setTimeout(()=>{ timerStatus.textContent = ''; }, 1500);
+    };
   </script>
 </body>
 </html>
