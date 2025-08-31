@@ -21,9 +21,8 @@
   <div style="padding:10px 20px 0 20px;">
     <div style="display:flex;align-items:flex-start;">
       <div style="min-width:320px;max-width:340px;">
-        <a href="http://sugangnew.hansei.ac.kr:8808/main.html?fake=Wed%20Feb%2026%202025%2019:41:52%20GMT+0900%20(%C7%D1%B1%B9%20%C7%A5%C1%D8%BD%C3)" target="_blank" style="display:inline-flex;align-items:center;text-decoration:none;gap:10px;margin-bottom:10px;">
-          <img src="common/logo.png" alt="한세대학교" style="margin-bottom:0;">
-        </a>
+        <img src="common/logo.png" alt="한세대학교" style="margin-bottom:0;">
+       
         <div id="timer-setup" style="margin-top:18px;padding:14px 12px 12px 12px;border:1px solid #1976d2;border-radius:8px;background:#f7faff;display:flex;align-items:center;gap:10px;max-width:290px;">
           <b style="margin-right:10px;color:#1976d2;">수강신청 오픈<br>타이머</b>
           <label style="font-size:0.98em;">시 <input type="number" id="timer-hour" min="0" max="23" value="0" style="width:36px;"></label>
@@ -50,8 +49,12 @@
         </div>
         <div style="margin-top:18px;">
           <div style="border:1px solid #bbb; border-radius:8px; background:#fafafa; padding:18px; font-size:1.2em; height:40px; overflow-y:auto;">
-            <b>수강신청 연습 시스템에 오신 것을 환영합니다!</b>
+            <b>수강신청 연습 시스템에 오신 것을 환영합니다!</b><br>
+            <a href="http://sugangnew.hansei.ac.kr:8808/main.html?fake=Wed%20Feb%2026%202025%2019:41:52%20GMT+0900%20(%C7%D1%B1%B9%20%C7%A5%C1%D8%BD%C3)" target="_blank" style="display:inline-flex;align-items:center;text-decoration:none;gap:10px;margin-bottom:10px;">
+              <b>본수강신청 링크</b>
+            </a>
           </div>
+          
         </div>
       </div>
     </div>
@@ -133,13 +136,11 @@
     };
     registerBtn.disabled = true;
     registerBtn.style.opacity = 0.5;
-    // 초기화 버튼 기능
     document.getElementById('reset-btn').onclick = function() {
       localStorage.removeItem('registerList');
       localStorage.removeItem('basketList');
       registerBtn.disabled = true;
       registerBtn.style.opacity = 0.5;
-  // 공지사항 탭으로 이동
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('.tab-btn[data-page="notice"]').classList.add('active');
   mainFrame.src = tabMap['notice'];
