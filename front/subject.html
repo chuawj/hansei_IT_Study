@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>교과목조회</title>
   <link rel="stylesheet" href="../common/style.css">
+  <script src="data.js"></script>
   <style>
     table.tableList2, .tableList2 th, .tableList2 td {
       font-size: 1.1em !important;
@@ -27,6 +28,12 @@
         <label style="font-weight:bold;">학과</label>
         <select id="major-select" style="min-width:120px;height:32px;font-size:1em;"></select>
       </span>
+      <span id="subject-search-area" style="display:none;align-items:center;gap:8px;">
+        <label style="font-weight:bold;">조회:</label>
+        <input type="text" id="subject-code-input" placeholder="과목번호로 검색" style="height:32px;font-size:1em;width:120px;">
+        <label style="font-weight:bold;">과목:</label>
+        <select id="subject-list-select" style="min-width:180px;height:32px;font-size:1em;"></select>
+      </span>
       <input type="text" id="subject-keyword" placeholder="과목명 검색" style="height:32px;font-size:1em;width:180px;">
       <select id="type-select" style="min-width:120px;height:32px;font-size:1em;display:none;">
         <option value="">전체</option>
@@ -40,29 +47,6 @@
   <tbody id="subject-tbody"></tbody>
   </table>
     <script>
-    const categoryData = [
-      { category:'신학과', depts:[{ name:'신학과', majors:['신학과'] }] },
-      { category:'사회과학부', depts:[{ name:'사회과학부', majors:['미디어영상광고학과','경영학과','관광경영학과'] }] },
-      { category:'공공서비스학부', depts:[{ name:'공공서비스학부', majors:['경찰행정학과','사회복지학과'] }] },
-      { category:'언어학부', depts:[{ name:'언어학부', majors:['영어학과','중국어학과'] }] },
-      { category:'IT학부', depts:[{ name:'IT학부', majors:['컴퓨터공학과','융합보안학과','IT학부'] }] },
-      { category:'간호학과', depts:[{ name:'간호학과', majors:['간호학과'] }] },
-      { category:'디자인학부', depts:[{ name:'디자인학부', majors:['시각정보디자인학과','실내건축디자인학과','섬유패션디자인학과'] }] },
-      { category:'예술학부', depts:[{ name:'예술학부', majors:['음악학과','공연예술학과'] }] },
-      { category:'자유전공학부', depts:[{ name:'자유전공학부', majors:['자유전공학부'] }] }
-    ];
-    // 예시 과목 데이터(일부만,추가예정)
-    const subjects = [
-      { dept:'IT학부', major:'IT학부', year:1, name:'IT학부세미나', code:'25103', type:'전공기초', credit:3, cap:30, prof:'공삼공' },
-      { dept:'IT학부', major:'컴퓨터공학과', year:1, name:'웹프로그래밍', code:'19504', type:'전공필수', credit:3, cap:30, prof:'홍길동' },
-      { dept:'IT학부', major:'컴퓨터공학과', year:1, name:'자료구조', code:'19505', type:'전공필수', credit:3, cap:30, prof:'이몽룡' },
-      { dept:'IT학부', major:'융합보안학과', year:1, name:'정보보안개론', code:'19509', type:'전공기초', credit:3, cap:30, prof:'김보안' },
-      { dept:'사회과학부', major:'미디어영상광고학과', year:1, name:'광고학개론', code:'21001', type:'전공기초', credit:3, cap:30, prof:'박광고' },
-      { dept:'사회과학부', major:'경영학과', year:1, name:'경영학원론', code:'21002', type:'전공기초', credit:3, cap:30, prof:'최경영' },
-      { dept:'공공서비스학부', major:'경찰행정학과', year:1, name:'경찰학개론', code:'22001', type:'전공기초', credit:3, cap:30, prof:'이경찰' },
-      { dept:'언어학부', major:'영어학과', year:1, name:'영문법', code:'23001', type:'전공기초', credit:3, cap:30, prof:'정영문' },
-      { dept:'디자인학부', major:'시각정보디자인학과', year:1, name:'디자인기초', code:'24001', type:'전공기초', credit:3, cap:30, prof:'김디자인' }
-    ];
     // 카테고리/학부/학과 옵션 생성
     const categorySelect = document.getElementById('category-select');
     const deptSelect = document.getElementById('dept-select');
@@ -104,19 +88,35 @@
     }
     deptSelect.onchange = updateMajorOptions;
     updateDeptOptions();
+    // 과목 셀렉트 박스 채우기
+    function fillSubjectListSelect() {
+      const select = document.getElementById('subject-list-select');
+      select.innerHTML = '';
+      subjects.forEach(subj => {
+        const opt = document.createElement('option');
+        opt.value = subj.code;
+        opt.textContent = `${subj.name} [${subj.code}]`;
+        select.appendChild(opt);
+      });
+    }
+
     categorySelect.onchange = function() {
       if(categorySelect.value === 'major') {
         majorArea.style.display = '';
         typeSelect.style.display = 'none';
         document.getElementById('subject-keyword').style.display = '';
+        document.getElementById('subject-search-area').style.display = 'none';
       } else if(categorySelect.value === 'subject') {
         majorArea.style.display = 'none';
         typeSelect.style.display = 'none';
-        document.getElementById('subject-keyword').style.display = '';
+        document.getElementById('subject-keyword').style.display = 'none';
+        document.getElementById('subject-search-area').style.display = 'inline-flex';
+        fillSubjectListSelect();
       } else if(categorySelect.value === 'type') {
         majorArea.style.display = 'none';
         typeSelect.style.display = '';
         document.getElementById('subject-keyword').style.display = 'none';
+        document.getElementById('subject-search-area').style.display = 'none';
       }
     };
     categorySelect.dispatchEvent(new Event('change'));
@@ -130,8 +130,13 @@
           s.major === major
         );
       } else if(categorySelect.value === 'subject') {
-        const keyword = document.getElementById('subject-keyword').value.trim();
-        if(keyword) filtered = filtered.filter(s => s.name.includes(keyword));
+        const codeInput = document.getElementById('subject-code-input').value.trim();
+        const selectCode = document.getElementById('subject-list-select').value;
+        if(codeInput) {
+          filtered = subjects.filter(s => s.code.includes(codeInput));
+        } else if(selectCode) {
+          filtered = subjects.filter(s => s.code === selectCode);
+        }
       } else if(categorySelect.value === 'type') {
         const type = typeSelect.value;
         if(type) filtered = filtered.filter(s => s.type === type);
@@ -140,7 +145,7 @@
       tbody.innerHTML = '';
       filtered.forEach((s,i) => {
         const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${i+1}</td><td>${s.dept}</td><td>${s.major}</td><td>${s.year}</td><td>${s.name}</td><td>${s.code}</td><td>${s.type}</td><td>${s.credit}</td><td>${s.cap||''}</td>`;
+        tr.innerHTML = `<td>${i+1}</td><td>${s.dept}</td><td>${s.major}</td><td>${s.year}</td><td>${s.name}</td><td>${s.code}</td><td>${s.type}</td><td>${s.credit}</td><td>${s.cap||''}</td>`;
         tbody.appendChild(tr);
       });
     }
@@ -158,6 +163,15 @@
       setBasket(list);
     }
     document.getElementById('search-btn').onclick = renderTable;
+    // 과목번호 입력, 과목 셀렉트 이벤트
+    if(document.getElementById('subject-code-input')) {
+      document.getElementById('subject-code-input').onkeyup = function(e) {
+        if(e.key === 'Enter') renderTable();
+      };
+    }
+    if(document.getElementById('subject-list-select')) {
+      document.getElementById('subject-list-select').onchange = renderTable;
+    }
     renderTable();
     </script>
   </div>
