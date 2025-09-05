@@ -14,6 +14,7 @@
 </head>
 <body>
   <div class="wrap">
+
     <div id="queue-modal" style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:1000;align-items:center;justify-content:center;">
       <div style="background:#fff;padding:36px 32px 32px 32px;border-radius:12px;box-shadow:0 2px 12px #888;min-width:320px;text-align:center;">
         <div id="queue-msg" style="font-size:1.25em;color:#1976d2;font-weight:bold;margin-bottom:12px;"></div>
@@ -66,6 +67,7 @@
   <table id="my-reg" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;"><thead><tr><th>No</th><th>교과목명</th><th>담당교수</th><th>삭제</th></tr></thead><tbody></tbody></table>
   </div>
     <script>
+  // 대기열 기능 항상 ON (토글 제거)
     // 빠른 수강신청 기능
     document.getElementById('quick-apply-btn').onclick = function() {
       const val = document.getElementById('quick-code').value.trim();

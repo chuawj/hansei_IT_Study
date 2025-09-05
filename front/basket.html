@@ -181,7 +181,6 @@
         });
       }
       document.getElementById('search-btn').onclick = renderTable;
-      // 과목번호 입력, 과목 셀렉트 이벤트
       if(document.getElementById('subject-code-input')) {
         document.getElementById('subject-code-input').onkeyup = function(e) {
           if(e.key === 'Enter') renderTable();
@@ -190,7 +189,6 @@
       if(document.getElementById('subject-list-select')) {
         document.getElementById('subject-list-select').onchange = renderTable;
       }
-      // 예비수강신청 내역 관리(로컬스토리지)
       function getBasket() {
         return JSON.parse(localStorage.getItem('basketList')||'[]');
       }
