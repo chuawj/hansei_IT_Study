@@ -22,6 +22,7 @@
     <div style="display:flex;align-items:flex-start;">
       <div style="min-width:320px;max-width:340px;">
         <img src="common/logo.png" alt="한세대학교" style="margin-bottom:0;">
+       
         <div id="timer-setup" style="margin-top:18px;padding:14px 12px 12px 12px;border:1px solid #1976d2;border-radius:8px;background:#f7faff;display:flex;align-items:center;gap:10px;max-width:290px;">
           <b style="margin-right:10px;color:#1976d2;">수강신청 오픈<br>타이머</b>
           <label style="font-size:0.98em;">시 <input type="number" id="timer-hour" min="0" max="23" value="0" style="width:36px;"></label>
@@ -32,6 +33,11 @@
           <button id="set-timer-btn" style="background:#1976d2;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:1em;">타이머 설정</button>
           <button id="reset-btn" style="background:#d32f2f;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:1em;">초기화</button>
           <span id="timer-status" style="color:#1976d2;font-weight:bold;font-size:1em;"></span>
+        </div>
+        <div style="margin-top:8px;max-width:290px;display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="queue-toggle" style="vertical-align:middle;width:15px;height:15px;">
+          <span style="font-size:0.97em;font-weight:500;">대기열</span>
+          <span id="queue-status" style="font-size:0.97em;color:#1976d2;margin-left:2px;"></span>
         </div>
       </div>
       <div style="flex:1; min-width:0; margin-left:24px;">
@@ -62,6 +68,22 @@
   </div>
   <script>
 
+    // 대기열 기능 토글 
+    let queueEnabled = true;
+    if(localStorage.getItem('queueEnabled')!==null) {
+      queueEnabled = localStorage.getItem('queueEnabled')==='true';
+    }
+    const queueToggle = document.getElementById('queue-toggle');
+    const queueStatus = document.getElementById('queue-status');
+    if(queueToggle) {
+      queueToggle.checked = queueEnabled;
+      queueStatus.textContent = queueEnabled ? 'ON' : 'OFF';
+      queueToggle.onchange = function() {
+        queueEnabled = queueToggle.checked;
+        localStorage.setItem('queueEnabled', queueEnabled);
+        queueStatus.textContent = queueEnabled ? 'ON' : 'OFF';
+      };
+    }
     const tabMap = {
       notice: 'front/notice.html',
       subject: 'front/subject.html',
