@@ -67,24 +67,13 @@
         <button id="search-btn" style="height:34px;font-size:1em;padding:0 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">조회</button>
       </div>
   <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
-        <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>예비신청</th></tr></thead>
+  <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th><th>예비신청</th></tr></thead>
         <tbody id="basket-list"></tbody>
       </table>
   <div style="margin-top:60px;"><b>예비수강 신청내역</b></div>
   <table id="my-basket" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;">
     <thead>
-      <tr>
-        <th>No</th>
-        <th>개설학부</th>
-        <th>학과</th>
-        <th>학년</th>
-        <th>교과목명</th>
-        <th>과목번호</th>
-        <th>이수구분</th>
-        <th>학점</th>
-        <th>정원</th>
-        <th>삭제</th>
-      </tr>
+      <tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th><th>삭제</th></tr>
     </thead>
     <tbody></tbody>
   </table>
@@ -189,7 +178,7 @@
         tbody.innerHTML = '';
         filtered.forEach((s,i) => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${i+1}</td><td>${s.dept}</td><td>${s.major}</td><td>${s.year}</td><td>${s.name}</td><td>${s.code}</td><td>${s.type}</td><td>${s.credit}</td><td><button class='btn apply'>신청</button></td>`;
+          tr.innerHTML = `<td>${i+1}</td><td>${s.dept}</td><td>${s.major}</td><td>${s.year}</td><td>${s.name}</td><td>${s.code}</td><td>${s.type}</td><td>${s.credit}</td><td>${s.cap !== undefined ? s.cap : 30}</td><td><button class='btn apply'>신청</button></td>`;
           tr.querySelector('.apply').onclick = function() {
             addToBasket(s);
           };
