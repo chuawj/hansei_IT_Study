@@ -86,8 +86,10 @@
     <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th><th>신청</th></tr></thead>
     <tbody id="reg-list"></tbody>
   </table>
-  <div style="margin-top:60px;"><b>수강신청 내역</b></div>
-  <table id="my-reg" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;"><thead><tr><th>No</th><th>교과목명</th><th>담당교수</th><th>삭제</th></tr></thead><tbody></tbody></table>
+  <div style="margin-top:120px;"><b>수강신청 내역</b></div>
+  <table id="my-reg" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;">
+    <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th><th>삭제</th></tr></thead>
+    <tbody></tbody></table>
   </div>
     <script>
   // 대기열 기능 ON/OFF (localStorage 연동)
@@ -347,7 +349,7 @@
       tbody.innerHTML = '';
       list.forEach((s,i) => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${i+1}</td><td>${s.name}</td><td>${s.prof}</td><td><button class='btn del'>삭제</button></td>`;
+        tr.innerHTML = `<td>${i+1}</td><td>${s.dept||''}</td><td>${s.major||''}</td><td>${s.year||''}</td><td>${s.name||''}</td><td>${s.code||''}</td><td>${s.type||''}</td><td>${s.credit||''}</td><td>${s.cap!==undefined?s.cap:30}</td><td><button class='btn del'>삭제</button></td>`;
         tr.querySelector('.del').onclick = function() { removeFromRegister(s.code); };
         tbody.appendChild(tr);
       });

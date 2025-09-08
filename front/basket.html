@@ -71,7 +71,8 @@
         <tbody id="basket-list"></tbody>
       </table>
   <div style="margin-top:60px;"><b>예비수강 신청내역</b></div>
-  <table id="my-basket" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;"><thead><tr><th>No</th><th>교과목명</th><th>담당교수</th><th>정원</th><th>삭제</th></tr></thead><tbody></tbody></table>
+  <table id="my-basket" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;"><thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th><th>삭제</th></tr></thead><tbody></tbody></table>
+
       <script>
       // 카테고리/학부/학과 옵션 생성
       const categorySelect = document.getElementById('category-select');
@@ -114,8 +115,7 @@
       }
       deptSelect.onchange = updateMajorOptions;
       updateDeptOptions();
-      // 카테고리 변경 시 UI 토글
-      // 과목 셀렉트 박스 채우기
+      
       function fillSubjectListSelect() {
         const select = document.getElementById('subject-list-select');
         select.innerHTML = '';
