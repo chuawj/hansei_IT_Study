@@ -67,11 +67,11 @@
         <button id="search-btn" style="height:34px;font-size:1em;padding:0 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">조회</button>
       </div>
   <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
-        <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th><th>예비신청</th></tr></thead>
+        <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>예비신청</th></tr></thead>
         <tbody id="basket-list"></tbody>
       </table>
   <div style="margin-top:60px;"><b>예비수강 신청내역</b></div>
-  <table id="my-basket" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;"><thead><tr><th>No</th><th>교과목명</th><th>담당교수</th><th>삭제</th></tr></thead><tbody></tbody></table>
+  <table id="my-basket" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;"><thead><tr><th>No</th><th>교과목명</th><th>담당교수</th><th>정원</th><th>삭제</th></tr></thead><tbody></tbody></table>
       <script>
       // 카테고리/학부/학과 옵션 생성
       const categorySelect = document.getElementById('category-select');
@@ -214,7 +214,7 @@
         tbody.innerHTML = '';
         list.forEach((s,i) => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${i+1}</td><td>${s.name}</td><td>${s.prof}</td><td><button class='btn del'>삭제</button></td>`;
+          tr.innerHTML = `<td>${i+1}</td><td>${s.name}</td><td>${s.prof}</td><td>${s.limit !== undefined ? s.limit : ''}</td><td><button class='btn del'>삭제</button></td>`;
           tr.querySelector('.del').onclick = function() { removeFromBasket(s.code); };
           tbody.appendChild(tr);
         });
