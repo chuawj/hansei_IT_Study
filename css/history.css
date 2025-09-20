@@ -1,0 +1,20 @@
+body { margin:0; 
+    font-family:'Noto Sans KR',sans-serif; 
+    background:#fff; }
+.wrap { width:100vw; 
+        margin:0; 
+        background:#fff; }
+h2 { margin-bottom:24px; }
+table { width:100%; 
+    border-collapse:collapse; 
+    margin-bottom:24px; }
+th,td { border:1px solid #ddd; 
+        padding:8px; 
+        text-align:center; }
+th { background:#f0f0f0; }
+.btn { padding:4px 14px; border:none;
+       background:#1976d2;
+       color:#fff;
+       border-radius:4px; 
+       cursor:pointer; }
+.btn:disabled { background:#aaa; }

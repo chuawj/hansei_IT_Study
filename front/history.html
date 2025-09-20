@@ -3,20 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>수강신청 내역</title>
-  <style>
-    body { margin:0; font-family:'Noto Sans KR',sans-serif; background:#fff; }
-  .wrap { width:100vw; margin:0; background:#fff; }
-    h2 { margin-bottom:24px; }
-    table { width:100%; border-collapse:collapse; margin-bottom:24px; }
-    th,td { border:1px solid #ddd; padding:8px; text-align:center; }
-    th { background:#f0f0f0; }
-    .btn { padding:4px 14px; border:none; background:#1976d2; color:#fff; border-radius:4px; cursor:pointer; }
-    .btn:disabled { background:#aaa; }
-  </style>
+  <link rel="stylesheet" href="../css/history.css">
 </head>
 <body>
   <div class="wrap">
-  <h2>수강신청 내역</h2>
+  <h2> 수강신청 내역</h2>
     <table>
   <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th></tr></thead>
       <tbody id="history-tbody"></tbody>

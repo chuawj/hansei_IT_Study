@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <title>수강신청 연습</title>
   <link rel="stylesheet" href="../common/style.css">
-  <link rel="stylesheet" href="../common/jquery-ui-1.9.2.custom.min.css">
   <script src="../common/jquery-1.8.3.js"></script>
-  <script src="../common/jquery-ui-1.9.2.custom.min.js"></script>
-
 </head>
 <body>
   <div class="container">
@@ -27,21 +24,6 @@
       <ul id="my-list"></ul>
     </div>
   </div>
-  <script>
-    $(function() {
-      $('.apply').click(function() {
-        var row = $(this).closest('tr');
-        var subject = row.find('td:first').text();
-        var prof = row.find('td:nth-child(2)').text();
-        var capCell = row.find('.capacity');
-        var cap = parseInt(capCell.text(), 10);
-        if (cap > 0) {
-          capCell.text(cap - 1);
-          $('#my-list').append('<li>' + subject + ' (' + prof + ')</li>');
-          if (cap - 1 === 0) $(this).prop('disabled', true).text('마감');
-        }
-      });
-    });
-  </script>
+ 
 </body>
 </html>

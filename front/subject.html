@@ -4,28 +4,24 @@
   <meta charset="UTF-8">
   <title>교과목조회</title>
   <link rel="stylesheet" href="../common/style.css">
-  <script src="data.js"></script>
-  <style>
-    table.tableList2, .tableList2 th, .tableList2 td {
-      font-size: 1.1em !important;
-      padding: 12px 8px !important;
-    }
-  </style>
+  <link rel="stylesheet" href="../css/subject.css">
+  <script src="../js/data.js"></script>
+  <script src="../js/subject.js"></script>
 </head>
 <body>
   <div class="subject-wrap">
     <h2>교과목 조회</h2>
     <div class="search-bar" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
-      <label style="font-weight:bold;">카테고리</label>
+      <label style="font-weight:bold;"></label>
       <select id="category-select" style="min-width:140px;height:32px;font-size:1em;">
         <option value="major">전공/학과 조회</option>
         <option value="subject">과목 검색</option>
         <option value="type">이수 구분</option>
       </select>
       <span id="major-area" style="display:inline-flex;align-items:center;gap:8px;">
-        <label style="font-weight:bold;">학부</label>
+        <label style="font-weight:bold;"></label>
         <select id="dept-select" style="min-width:120px;height:32px;font-size:1em;"></select>
-        <label style="font-weight:bold;">학과</label>
+        <label style="font-weight:bold;"></label>
         <select id="major-select" style="min-width:120px;height:32px;font-size:1em;"></select>
       </span>
       <span id="subject-search-area" style="display:none;align-items:center;gap:8px;">
@@ -42,140 +38,14 @@
       </select>
       <button id="search-btn" style="height:34px;font-size:1em;padding:0 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">조회</button>
     </div>
-  <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
-    <thead><tr><th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th></tr></thead>
-    <tbody id="subject-tbody"></tbody>
-  </table>
-
-    <script>
-    // 카테고리/학부/학과 옵션 생성
-    const categorySelect = document.getElementById('category-select');
-    const deptSelect = document.getElementById('dept-select');
-    const majorSelect = document.getElementById('major-select');
-    const typeSelect = document.getElementById('type-select');
-    const majorArea = document.getElementById('major-area');
-    // 학부/학과 옵션
-    function updateDeptOptions() {
-      deptSelect.innerHTML = '';
-      categoryData.forEach(cat => {
-        cat.depts.forEach(d => {
-          const opt = document.createElement('option');
-          opt.value = d.name; opt.textContent = d.name;
-          deptSelect.appendChild(opt);
-        });
-      });
-      updateMajorOptions();
-    }
-    function updateMajorOptions() {
-      majorSelect.innerHTML = '';
-      let found = false;
-      categoryData.forEach(cat => {
-        cat.depts.forEach(d => {
-          if(d.name === deptSelect.value) {
-            d.majors.forEach(m => {
-              const opt = document.createElement('option');
-              opt.value = m; opt.textContent = m;
-              majorSelect.appendChild(opt);
-            });
-            found = true;
-          }
-        });
-      });
-      if(!found) {
-        const opt = document.createElement('option');
-        opt.value = ''; opt.textContent = '전체';
-        majorSelect.appendChild(opt);
-      }
-    }
-    deptSelect.onchange = updateMajorOptions;
-    updateDeptOptions();
-    // 과목 셀렉트 박스 채우기
-    function fillSubjectListSelect() {
-      const select = document.getElementById('subject-list-select');
-      select.innerHTML = '';
-      subjects.forEach(subj => {
-        const opt = document.createElement('option');
-        opt.value = subj.code;
-        opt.textContent = `${subj.name} [${subj.code}]`;
-        select.appendChild(opt);
-      });
-    }
-
-    categorySelect.onchange = function() {
-      if(categorySelect.value === 'major') {
-        majorArea.style.display = '';
-        typeSelect.style.display = 'none';
-        document.getElementById('subject-keyword').style.display = '';
-        document.getElementById('subject-search-area').style.display = 'none';
-      } else if(categorySelect.value === 'subject') {
-        majorArea.style.display = 'none';
-        typeSelect.style.display = 'none';
-        document.getElementById('subject-keyword').style.display = 'none';
-        document.getElementById('subject-search-area').style.display = 'inline-flex';
-        fillSubjectListSelect();
-      } else if(categorySelect.value === 'type') {
-        majorArea.style.display = 'none';
-        typeSelect.style.display = '';
-        document.getElementById('subject-keyword').style.display = 'none';
-        document.getElementById('subject-search-area').style.display = 'none';
-      }
-    };
-    categorySelect.dispatchEvent(new Event('change'));
-    function renderTable() {
-      let filtered = subjects;
-      if(categorySelect.value === 'major') {
-        const dept = deptSelect.value;
-        const major = majorSelect.value;
-        filtered = filtered.filter(s =>
-          s.dept === dept &&
-          s.major === major
-        );
-      } else if(categorySelect.value === 'subject') {
-        const codeInput = document.getElementById('subject-code-input').value.trim();
-        const selectCode = document.getElementById('subject-list-select').value;
-        if(codeInput) {
-          filtered = subjects.filter(s => s.code.includes(codeInput));
-        } else if(selectCode) {
-          filtered = subjects.filter(s => s.code === selectCode);
-        }
-      } else if(categorySelect.value === 'type') {
-        const type = typeSelect.value;
-        if(type) filtered = filtered.filter(s => s.type === type);
-      }
-      const tbody = document.getElementById('subject-tbody');
-      tbody.innerHTML = '';
-      filtered.forEach((s,i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${i+1}</td><td>${s.dept}</td><td>${s.major}</td><td>${s.year}</td><td>${s.name}</td><td>${s.code}</td><td>${s.type}</td><td>${s.credit}</td><td>${s.cap||''}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-    // 예비수강신청 내역 관리(로컬스토리지)
-    function getBasket() {
-      return JSON.parse(localStorage.getItem('basketList')||'[]');
-    }
-    function setBasket(list) {
-      localStorage.setItem('basketList', JSON.stringify(list));
-    }
-    function addToBasket(subject) {
-      let list = getBasket();
-      if(list.find(s=>s.code===subject.code)) return;
-      list.push(subject);
-      setBasket(list);
-    }
-    document.getElementById('search-btn').onclick = renderTable;
-    // 과목번호 입력, 과목 셀렉트 이벤트
-    if(document.getElementById('subject-code-input')) {
-      document.getElementById('subject-code-input').onkeyup = function(e) {
-        if(e.key === 'Enter') renderTable();
-      };
-    }
-    if(document.getElementById('subject-list-select')) {
-      document.getElementById('subject-list-select').onchange = renderTable;
-    }
-    renderTable();
-
-    </script>
+    <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
+      <thead>
+        <tr>
+          <th>No</th><th>개설학부</th><th>학과</th><th>학년</th><th>교과목명</th><th>과목번호</th><th>이수구분</th><th>학점</th><th>정원</th>
+        </tr>
+      </thead>
+      <tbody id="subject-list"></tbody>
+    </table>
   </div>
 </body>
 </html>

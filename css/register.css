@@ -1,0 +1,25 @@
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    background: #fff;
+    color: #1976d2;
+    font-weight: bold;
+    font-size: 1.08em;
+    padding: 14px 32px;
+    border-radius: 24px;
+    box-shadow: 0 2px 12px #bbb;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    }
+.toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    }
+table.tableList2, .tableList2 th, .tableList2 td {
+     font-size: 1.1em !important;
+     padding: 12px 8px !important;
+    }
