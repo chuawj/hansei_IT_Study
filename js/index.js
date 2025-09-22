@@ -1,5 +1,5 @@
 window.onload = function() {
-    // 대기열 기능 토글 
+    // 대기열 기능 토글
     let queueEnabled = true;
     if(localStorage.getItem('queueEnabled')!==null) {
       queueEnabled = localStorage.getItem('queueEnabled')==='true';
