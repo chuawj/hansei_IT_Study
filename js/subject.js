@@ -92,7 +92,7 @@ window.onload = function() {
         const type = typeSelect.value;
         if(type) filtered = filtered.filter(s => s.type === type);
       }
-      const tbody = document.getElementById('subject-tbody');
+  const tbody = document.getElementById('subject-list');
       tbody.innerHTML = '';
       filtered.forEach((s,i) => {
         const tr = document.createElement('tr');
