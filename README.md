@@ -61,6 +61,7 @@
   - **basket.html**: 예비수강신청 화면 (검색, 장바구니 관리)  
 
 ### (3) 시스템 / 프로그램부분  
+![ERD 다이어그램](한세_수강신청%20연습_erd.png/)
 - **데이터 구조**  
   - `subjects`: 과목 마스터 데이터 (code, name, dept, major, year, type, credit, cap, prof)  
   - `categoryData`: 학부/학과/전공 데이터  
