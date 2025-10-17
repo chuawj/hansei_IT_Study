@@ -1,5 +1,4 @@
 # 웹 개발 제안서  
-- 데모 웹 링크 (https://chuawj.github.io/hesei_IT_Study/)
 ## I. 제안개요  
 
 ### (1) 제안의 목적과 배경  
