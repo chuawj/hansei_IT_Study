@@ -107,7 +107,7 @@
 
 ## VI. 배포 및 버전 정보
 
-- 데모 URL: https://chuawj.github.io/hesei_IT_Study/
+- 데모 URL: https://chuawj.github.io/hansei_IT_Study/
 - 현재 버전: v0.1-demo
 - 작성일: 2025-10-14
 - 향후 배포 계획: 주요 변경사항(디자인 개선, 실제 데이터 반영 등)은 버전별 릴리스 노트에 기록할 예정입니다.
