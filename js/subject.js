@@ -40,12 +40,26 @@ window.onload = function() {
     }
     deptSelect.onchange = updateMajorOptions;
     updateDeptOptions();
-    // populate type select from subjects data
+    // populate type select from subjects data in a preferred order
     function populateTypeOptions() {
       typeSelect.innerHTML = '';
-      const types = Array.from(new Set(subjects.map(s => s.type).filter(Boolean))).sort();
+      const preferred = ['전공필수','전공선택','전공기초','교양필수','교양선택','채플','연계필수','연계선택'];
+      const typesSet = new Set(subjects.map(s => s.type).filter(Boolean));
+      const types = Array.from(typesSet);
       const optAll = document.createElement('option'); optAll.value = ''; optAll.textContent = '전체';
       typeSelect.appendChild(optAll);
+      // add preferred order first if present
+      preferred.forEach(p => {
+        if (typesSet.has(p)) {
+          const opt = document.createElement('option'); opt.value = p; opt.textContent = p;
+          typeSelect.appendChild(opt);
+          // remove from types array
+          const idx = types.indexOf(p); if (idx !== -1) types.splice(idx,1);
+          typesSet.delete(p);
+        }
+      });
+      // append any remaining types sorted
+      types.sort();
       types.forEach(t => {
         const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
         typeSelect.appendChild(opt);
