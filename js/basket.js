@@ -40,6 +40,17 @@ window.onload = function() {
       }
       deptSelect.onchange = updateMajorOptions;
       updateDeptOptions();
+      function populateTypeOptions() {
+        typeSelect.innerHTML = '';
+        const types = Array.from(new Set(subjects.map(s => s.type).filter(Boolean))).sort();
+        const optAll = document.createElement('option'); optAll.value = ''; optAll.textContent = '전체';
+        typeSelect.appendChild(optAll);
+        types.forEach(t => {
+          const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
+          typeSelect.appendChild(opt);
+        });
+      }
+      populateTypeOptions();
       
       function fillSubjectListSelect() {
         const select = document.getElementById('subject-list-select');
@@ -106,14 +117,7 @@ window.onload = function() {
         });
       }
       document.getElementById('search-btn').onclick = renderTable;
-      if(document.getElementById('subject-code-input')) {
-        document.getElementById('subject-code-input').onkeyup = function(e) {
-          if(e.key === 'Enter') renderTable();
-        };
-      }
-      if(document.getElementById('subject-list-select')) {
-        document.getElementById('subject-list-select').onchange = renderTable;
-      }
+      // Do not auto-run renderTable on Enter or select change; require explicit search button click.
       function getBasket() {
         return JSON.parse(localStorage.getItem('basketList')||'[]');
       }
@@ -143,6 +147,6 @@ window.onload = function() {
           tr.querySelector('.del').onclick = function() { removeFromBasket(s.code); };
           tbody.appendChild(tr);
         });
-    }
-renderTable();
-renderBasketTable();}
+  }
+  renderBasketTable();
+}
