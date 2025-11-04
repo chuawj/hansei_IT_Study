@@ -32,7 +32,7 @@ window.onload = function() {
         } else {
           mainFrame.src = tabMap[btn.dataset.page];
         }
-        mainFrame.style.height = '700px';
+  mainFrame.style.height = '700px';
       }
     });
 
@@ -92,7 +92,7 @@ window.onload = function() {
     };
     registerBtn.disabled = true;
     registerBtn.style.opacity = 0.5;
-    document.getElementById('reset-btn').onclick = function() {
+  document.getElementById('reset-btn').onclick = function() {
       localStorage.removeItem('registerList');
       localStorage.removeItem('basketList');
       registerBtn.disabled = true;

@@ -11,36 +11,36 @@
 <body>
   <div style="padding:10px 20px 0 20px;">
     <div style="display:flex;align-items:flex-start;">
-      <div style="min-width:320px;max-width:340px;">
+  <div class="side-col" style="min-width:220px;max-width:260px;">
         <img src="common/logo.png" alt="한세대학교" style="margin-bottom:0;">
        
-        <div id="timer-setup" style="margin-top:18px;padding:14px 12px 12px 12px;border:1px solid #1976d2;border-radius:8px;background:#f7faff;display:flex;align-items:center;gap:10px;max-width:290px;">
-          <b style="margin-right:10px;color:#1976d2;">수강신청 오픈<br>타이머</b>
-          <label for="timer-hour" style="font-size:0.98em;">시</label> <input type="number" id="timer-hour" min="0" max="23" value="0" style="width:36px;">
-          <label for="timer-min" style="font-size:0.98em;">분</label> <input type="number" id="timer-min" min="0" max="59" value="0" style="width:36px;">
-          <label for="timer-sec" style="font-size:0.98em;">초</label> <input type="number" id="timer-sec" min="0" max="59" value="0" style="width:36px;">
+        <div id="timer-setup" class="timer-box">
+          <b class="timer-title">수강신청 오픈<br>타이머</b>
+          <label for="timer-hour" class="sr">시</label> <input type="number" id="timer-hour" min="0" max="23" value="0" class="timer-input">
+          <label for="timer-min" class="sr">분</label> <input type="number" id="timer-min" min="0" max="59" value="0" class="timer-input">
+          <label for="timer-sec" class="sr">초</label> <input type="number" id="timer-sec" min="0" max="59" value="0" class="timer-input">
         </div>
-        <div style="margin-top:6px;max-width:290px;display:flex;align-items:center;gap:8px;">
-          <button id="set-timer-btn" style="background:#1976d2;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:1em;">타이머 설정</button>
-          <button id="reset-btn" style="background:#d32f2f;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:1em;">초기화</button>
-          <span id="timer-status" style="color:#1976d2;font-weight:bold;font-size:1em;"></span>
+        <div class="timer-actions">
+          <button id="set-timer-btn" class="btn-primary small">타이머 설정</button>
+          <button id="reset-btn" class="btn-danger small">초기화</button>
+          <span id="timer-status" class="timer-status"></span>
         </div>
-        <div style="margin-top:8px;max-width:290px;display:flex;align-items:center;gap:6px;">
+        <div style="margin-top:8px;display:flex;align-items:center;gap:6px;">
           <input type="checkbox" id="queue-toggle" style="vertical-align:middle;width:15px;height:15px;">
           <span style="font-size:0.97em;font-weight:500;">대기열</span>
           <span id="queue-status" style="font-size:0.97em;color:#1976d2;margin-left:2px;"></span>
         </div>
       </div>
       <div style="flex:1; min-width:0; margin-left:24px;">
-        <div style="display:flex;gap:0;">
-          <button class="tab-btn active" data-page="notice" style="border:1px solid #bbb; border-bottom:none; background:#fff; padding:8px 18px; font-size:1em; cursor:pointer;">공지사항</button>
-          <button class="tab-btn" data-page="subject" style="border:1px solid #bbb; border-bottom:none; background:#fff; padding:8px 18px; font-size:1em; cursor:pointer;">교과목조회</button>
-          <button class="tab-btn" data-page="basket" style="border:1px solid #bbb; border-bottom:none; background:#fff; padding:8px 18px; font-size:1em; cursor:pointer;">예비수강신청</button>
-          <button class="tab-btn" data-page="register" style="border:1px solid #bbb; border-bottom:none; background:#fff; padding:8px 18px; font-size:1em; cursor:pointer;">수강신청</button>
-          <button class="tab-btn" data-page="history" style="border:1px solid #bbb; border-bottom:none; background:#fff; padding:8px 18px; font-size:1em; cursor:pointer;">수강내역 조회</button>
+        <div class="nav">
+          <button class="tab-btn active" data-page="notice">공지사항</button>
+          <button class="tab-btn" data-page="subject">교과목조회</button>
+          <button class="tab-btn" data-page="basket">예비수강신청</button>
+          <button class="tab-btn" data-page="register">수강신청</button>
+          <button class="tab-btn" data-page="history">수강내역 조회</button>
         </div>
 
-        <div style="border:1px solid #bbb; border-radius:0 0 8px 8px; min-height:700px; background:#fff;">
+        <div class="content-panel">
           <iframe id="main-frame" src="front/notice.html" style="width:100%; height:700px; border:none;"></iframe>
         </div>
         <div style="margin-top:18px;">
