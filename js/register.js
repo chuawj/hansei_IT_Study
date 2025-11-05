@@ -42,13 +42,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   deptSelect.onchange = updateMajorOptions;
   updateDeptOptions();
-  // populate type select from subjects
   function populateTypeOptions() {
     typeSelect.innerHTML = '';
-    const types = Array.from(new Set(subjects.map(s => s.type).filter(Boolean))).sort();
+    const typesSet = new Set(subjects.map(s => s.type).filter(Boolean));
     const optAll = document.createElement('option'); optAll.value = ''; optAll.textContent = '전체';
     typeSelect.appendChild(optAll);
-    types.forEach(t => {
+    const preferred = ['전공필수','전공선택','전공기초','교양필수','교양선택','채플'];
+    preferred.forEach(t => {
+      if(typesSet.has(t)) {
+        const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
+        typeSelect.appendChild(opt);
+        typesSet.delete(t);
+      }
+    });
+    const remaining = Array.from(typesSet).sort();
+    remaining.forEach(t => {
       const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
       typeSelect.appendChild(opt);
     });
