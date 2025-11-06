@@ -62,6 +62,17 @@ window.onload = function() {
         });
       }
       populateTypeOptions();
+      // 이수구분 선택 시 전공 관련이면 학부/학과 영역과 과목명 검색 보이기
+      if (typeSelect) {
+        typeSelect.onchange = function() {
+          const val = typeSelect.value || '';
+          const isMajorType = ['전공필수','전공선택','전공기초'].includes(val);
+          majorArea.style.display = isMajorType ? '' : 'none';
+          const kw = document.getElementById('subject-keyword');
+          if (kw) kw.style.display = isMajorType ? '' : 'none';
+          if (isMajorType) updateDeptOptions();
+        };
+      }
       
       function fillSubjectListSelect() {
         const select = document.getElementById('subject-list-select');
@@ -127,8 +138,11 @@ window.onload = function() {
           tbody.appendChild(tr);
         });
       }
-      document.getElementById('search-btn').onclick = renderTable;
-      // Do not auto-run renderTable on Enter or select change; require explicit search button click.
+  document.getElementById('search-btn').onclick = renderTable;
+  // 입력 변경 시 즉시 조회되지 않도록 Enter/onchange 자동 실행을 비활성화.
+  if (document.getElementById('subject-code-input')) document.getElementById('subject-code-input').onkeyup = function(e){ /* no-op */ };
+  if (document.getElementById('subject-list-select')) document.getElementById('subject-list-select').onchange = function(){ /* no-op */ };
+  if (document.getElementById('subject-keyword')) document.getElementById('subject-keyword').onkeyup = function(e){ /* no-op */ };
       function getBasket() {
         return JSON.parse(localStorage.getItem('basketList')||'[]');
       }

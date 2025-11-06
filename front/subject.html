@@ -18,6 +18,16 @@
         <option value="subject">과목 검색</option>
         <option value="type">이수 구분</option>
       </select>
+      <!-- 이수구분(type-select)을 학부/학과(major-area) 앞에 배치 -->
+      <select id="type-select" style="display:none;min-width:120px;height:32px;font-size:1em;">
+        <option value="">전체</option>
+        <option value="전공필수">전공필수</option>
+        <option value="전공선택">전공선택</option>
+        <option value="전공기초">전공기초</option>
+        <option value="교양필수">교양필수</option>
+        <option value="교양선택">교양선택</option>
+        <option value="채플">채플</option>
+      </select>
       <span id="major-area" style="display:inline-flex;align-items:center;gap:8px;">
         <label style="font-weight:bold;"></label>
         <select id="dept-select" style="min-width:120px;height:32px;font-size:1em;"></select>
@@ -31,11 +41,6 @@
         <select id="subject-list-select" style="min-width:180px;height:32px;font-size:1em;"></select>
       </span>
       <input type="text" id="subject-keyword" placeholder="과목명 검색" style="height:32px;font-size:1em;width:180px;">
-      <select id="type-select" style="min-width:120px;height:32px;font-size:1em;display:none;">
-        <option value="">전체</option>
-        <option value="전공필수">전공필수</option>
-        <option value="전공기초">전공기초</option>
-      </select>
       <button id="search-btn" style="height:34px;font-size:1em;padding:0 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">조회</button>
     </div>
     <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
