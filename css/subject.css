@@ -1,7 +1,7 @@
 table.tableList2, .tableList2 th, .tableList2 td {
-      font-size: 1.1em !important;
-      padding: 12px 8px !important;
-    }
+  font-size: 1.1em !important;
+  padding: 12px 8px !important;
+}
 
 /* Search bar styling to match provided design */
 .search-bar {
@@ -18,6 +18,5 @@ table.tableList2, .tableList2 th, .tableList2 td {
 .search-bar select, .search-bar input[type="text"], .search-bar input[type="number"] {
   height:34px; padding:6px 10px; border:1px solid #ccc; border-radius:4px; background:#fff; font-size:0.95em;
 }
-/* highlight subject select with pink like design */
 select#subject-list-select { background:#f6d6de; }
 .search-bar #search-btn { height:34px; padding:6px 14px; background:#1976d2; color:#fff; border:none; border-radius:6px; cursor:pointer; }
