@@ -139,6 +139,32 @@ window.onload = function() {
         });
       }
   document.getElementById('search-btn').onclick = renderTable;
+  // 빠른 예비신청 버튼 처리
+  const quickBtn = document.getElementById('quick-apply-btn');
+  if (quickBtn) {
+    quickBtn.onclick = function() {
+      const raw = (document.getElementById('quick-code') || {}).value || '';
+      const val = raw.trim();
+      if (!val) {
+        if (window.Toast && Toast.show) Toast.show('과목코드를 입력하세요');
+        else alert('과목코드를 입력하세요');
+        return;
+      }
+      // 코드가 'CS101-01' 형태면 '-' 앞의 부분을 사용
+      const code = val.split('-')[0].toUpperCase();
+      const subj = subjects.find(s => (s.code||'').toUpperCase() === code);
+      if (!subj) {
+        if (window.Toast && Toast.show) Toast.show('과목을 찾을 수 없습니다');
+        else alert('과목을 찾을 수 없습니다');
+        return;
+      }
+      addToBasket(subj);
+      if (window.Toast && Toast.show) Toast.show(`${subj.name} 예비신청 완료`);
+      else alert(`${subj.name} 예비신청 완료`);
+      // 선택 초기화
+      (document.getElementById('quick-code') || {}).value = '';
+    };
+  }
   // 입력 변경 시 즉시 조회되지 않도록 Enter/onchange 자동 실행을 비활성화.
   if (document.getElementById('subject-code-input')) document.getElementById('subject-code-input').onkeyup = function(e){ /* no-op */ };
   if (document.getElementById('subject-list-select')) document.getElementById('subject-list-select').onchange = function(){ /* no-op */ };

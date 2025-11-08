@@ -7,8 +7,10 @@
   <link rel="stylesheet" href="../css/basket.css">
   <script src="../js/data_from_real.js"></script>
   <script src="../js/basket.js"></script>
+  <script src="../js/toast.js"></script>
 </head>
 <body>
+  <div id="toast" class="toast"></div>
   <h2>예비 수강신청</h2>
   <div class="search-bar" style="display:flex;align-items:center;gap:4px;margin-bottom:24px;">
     <select id="category-select" style="min-width:120px;height:32px;font-size:1em;">
@@ -67,6 +69,15 @@
     </span>
     <input type="text" id="subject-keyword" placeholder="과목명 검색" style="height:32px;font-size:1em;width:180px;margin-left:4px;">
     <button id="search-btn" style="height:32px;font-size:1em;padding:0 16px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-left:4px;">조회</button>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;margin-top:-10px;">
+    <div style="font-weight:bold;font-size:1.08em;color:#000000;">개설과목 내역</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#d32f2f;font-weight:bold;font-size:0.95em;">빠른 예비신청</span>
+      <label style="font-weight:bold;">과목코드-분반 :</label>
+      <input type="text" id="quick-code" placeholder="" style="height:21px;font-size:1em;width:110px;">
+      <button id="quick-apply-btn" style="height:28px;font-size:1em;padding:0 10px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">예비신청</button>
+    </div>
   </div>
   <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
     <thead>
