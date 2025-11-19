@@ -61,7 +61,11 @@
         <option value="신학과">신학과</option>
       </select>
     </span>
-  <span id="subject-search-area" style="display:none;align-items:center;gap:8px;">
+    <span id="major-area" style="display:none;align-items:center;gap:8px;">
+        <select id="dept-select" style="min-width:120px;height:32px;font-size:1em;"></select>
+        <select id="major-select" style="min-width:120px;height:32px;font-size:1em;"></select>
+      </span>
+    <span id="subject-search-area" style="display:none;align-items:center;gap:8px;">
       <label style="font-weight:bold;">조회:</label>
       <input type="text" id="subject-code-input" placeholder="과목번호로 검색" style="height:32px;font-size:1em;width:120px;">
       <label style="font-weight:bold;">과목:</label>
@@ -87,7 +91,7 @@
     </thead>
     <tbody id="basket-list"></tbody>
   </table>
-  <div style="margin-top:60px;"><b>예비수강 신청내역</b></div>
+  <div style="margin-top:100px;"><b>예비수강 신청내역</b></div>
   <table id="my-basket" class="table tableList2" style="margin-top:10px;overflow-x:unset;width:100%;">
     <thead>
       <tr>
