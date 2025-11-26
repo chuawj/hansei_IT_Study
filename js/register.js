@@ -4,6 +4,36 @@ document.addEventListener('DOMContentLoaded', function() {
   function getRegister() { return JSON.parse(localStorage.getItem('registerList')||'[]'); }
   function setRegister(list) { localStorage.setItem('registerList', JSON.stringify(list)); }
 
+  // 학기 정보 가져오기: localStorage에서만 가져오기 (더 안정적)
+  let currentSemester = localStorage.getItem('currentSemester') || '2';
+
+
+  function applySemester(sem) {
+    currentSemester = sem || '2';
+   
+    const basketOption = document.getElementById('basket-option');
+    if (basketOption) {
+      if (currentSemester === '1') {
+        try { basketOption.hidden = true; } catch(e) { basketOption.style.display = 'none'; }
+        // 만약 현재 선택이 예비수강이면 강제 변경
+        if (categorySelect && categorySelect.value === 'basket') {
+          categorySelect.value = 'major';
+          categorySelect.dispatchEvent(new Event('change'));
+        }
+      } else {
+        try { basketOption.hidden = false; basketOption.removeAttribute('style'); } catch(e) { basketOption.style.display = ''; }
+        try { const t = document.getElementById('toast'); if (t) { t.classList.remove('show'); t.textContent = ''; } } catch(e){}
+        try {
+          if (typeof categorySelect !== 'undefined' && categorySelect) {
+            categorySelect.value = 'basket';
+            categorySelect.dispatchEvent(new Event('change'));
+          }
+        } catch (e) { console.warn('[register] failed to auto-select basket', e); }
+      }
+    }
+  }
+
+
   const categorySelect = document.getElementById('category-select');
   const deptSelect = document.getElementById('dept-select');
   const majorSelect = document.getElementById('major-select');
@@ -14,6 +44,26 @@ document.addEventListener('DOMContentLoaded', function() {
   const subjectSearchArea = document.getElementById('subject-search-area');
 
   let currentTypeValue = '';
+
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'currentSemester') {
+      applySemester(e.newValue || '2');
+    }
+  });
+
+  window.addEventListener('message', function(ev) {
+    try {
+      const d = ev.data || {};
+      if (d && d.type === 'semester-changed') {
+        const sem = String(d.value || '2');
+        applySemester(sem);
+      }
+    } catch (err) { /* ignore malformed messages */ }
+  });
+
+  // DOM이 준비되면 초기 적용 (학기별 UI 적용 포함)
+  // 전체 UI 비활성화는 하지 않으므로 관련 함수 호출을 제거
+  setTimeout(function(){ applySemester(currentSemester); }, 0);
 
   // 이수구분 버튼 클릭 처리
   document.querySelectorAll('.type-button').forEach(btn => {
@@ -71,16 +121,30 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   categorySelect.onchange = function() {
-  // 초기화
-  majorArea.style.display = 'none';
-  if (typeButtons) typeButtons.style.display = 'none';
-  if (typeSelect) typeSelect.style.display = 'none';
+    // 1학기에서 예비수강 선택 시도 방지
+    if (currentSemester === '1' && categorySelect.value === 'basket') {
+      console.warn('⚠️ 1학기에는 예비수강 선택 불가');
+      Toast.show('1학기에는 예비수강신청 기능을 사용할 수 없습니다.');
+      categorySelect.value = 'major';
+      categorySelect.onchange.call(categorySelect);
+      return;
+    }
+
+    // 초기화
+    majorArea.style.display = 'none';
+    if (typeButtons) typeButtons.style.display = 'none';
+    if (typeSelect) typeSelect.style.display = 'none';
     subjectKeyword.style.display = 'none';
     subjectSearchArea.style.display = 'none';
     document.querySelectorAll('.type-button').forEach(b=>b.classList.remove('active'));
     currentTypeValue = '';
 
-    if (categorySelect.value === 'major') {
+    if (categorySelect.value === 'basket') {
+      majorArea.style.display = 'none';
+      subjectSearchArea.style.display = 'none';
+      if (typeButtons) typeButtons.style.display = 'none';
+      renderTable();
+    } else if (categorySelect.value === 'major') {
       majorArea.style.display = 'flex'; subjectKeyword.style.display = '';
       updateDeptOptions();
     } else if (categorySelect.value === 'subject') {
@@ -88,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (categorySelect.value === 'type') {
       if (typeSelect) typeSelect.style.display = '';
       else if (typeButtons) typeButtons.style.display = 'flex';
-  }
+    }
   };
 
   document.getElementById('search-btn').onclick = renderTable;
@@ -157,18 +221,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const quickApplyBtn = document.getElementById('quick-apply-btn');
   if (quickApplyBtn) quickApplyBtn.onclick = function(){
-    const val = (document.getElementById('quick-code')||{}).value || '';
-    if(!val) return Toast.show('과목코드-분반을 입력하세요.');
-    const m = val.match(/^([0-9]{4,6})(?:-(\d{1,2}))?$/);
-    if(!m) return Toast.show('형식: 과목코드-분반 (예:15905 또는 15905-1)');
-    const code = m[1], section = m[2] || '';
+    // 사용자가 과목코드와 분반을 입력하도록 요구하되, 분반은 반드시 '001'이어야 함
+    const rawCode = (document.getElementById('quick-code')||{}).value.trim() || '';
+    const sectionInput = (document.getElementById('quick-section')||{}).value.trim() || '';
+    if (!rawCode) return Toast.show('과목코드를 입력하세요.');
+    if (!sectionInput) return Toast.show("분반을 입력하세요. (예: 001)");
+    if (sectionInput !== '001') return Toast.show("분반은 '001'로 입력해야 합니다.");
+    // 과목코드는 숫자 부분만 취함 (하이픈 포함 입력도 허용하지만 분반은 위에서 검사)
+    const codeMatch = rawCode.match(/^([0-9]{4,6})/);
+    if (!codeMatch) return Toast.show('과목코드 형식이 올바르지 않습니다. (예: 15905)');
+    const code = codeMatch[1];
     const subj = (subjects||[]).find(s => s.code === code);
     if(!subj) return Toast.show('해당 과목코드의 과목이 없습니다.');
-    let list = getRegister(); if(list.find(s=>s.code===subj.code && (!section || s.section===section))) { Toast.show('이미 신청된 과목입니다.'); return; }
-    QueueModal.showApply(()=>{ if(section) subj.section = section; list.push(subj); setRegister(list); renderTable(); renderRegisterTable(); Toast.show('신청되었습니다.'); });
+    let list = getRegister(); if(list.find(s=>s.code===code && (s.section === sectionInput))) { Toast.show('이미 신청된 과목입니다.'); return; }
+    QueueModal.showApply(()=>{ const newSubj = Object.assign({}, subj); newSubj.section = sectionInput; list.push(newSubj); setRegister(list); renderTable(); renderRegisterTable(); Toast.show('신청되었습니다.'); });
   };
 
   // 초기화 및 진입
+  // 1학기인 경우 basket 선택 방지
+  if (currentSemester === '1' && categorySelect.value === 'basket') {
+    categorySelect.value = 'major';
+  }
   categorySelect.dispatchEvent(new Event('change'));
   QueueModal.showEnter(function(){ renderTable(); renderRegisterTable(); });
 });

@@ -77,9 +77,13 @@
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;margin-top:-10px;">
     <div style="font-weight:bold;font-size:1.08em;color:#000000;">개설과목 내역</div>
     <div style="display:flex;align-items:center;gap:8px;">
-      <span style="color:#d32f2f;font-weight:bold;font-size:0.95em;">빠른 예비신청</span>
+      <span style="color:#d32f2f;font-weight:bold;font-size:0.95em;">빠른 신청</span>
       <label style="font-weight:bold;">과목코드-분반 :</label>
-      <input type="text" id="quick-code" placeholder="" style="height:21px;font-size:1em;width:110px;">
+      <span style="display:inline-flex;align-items:center;gap:6px;">
+        <input type="text" id="quick-code" placeholder="" style="height:22px;font-size:0.95em;width:78px;padding:4px;border:1px solid #ccc;border-radius:4px;">
+        <span style="font-weight:bold;color:#444;">-</span>
+        <input type="text" id="quick-section" placeholder="001" maxlength="3" style="height:22px;font-size:0.95em;width:36px;padding:4px;border:1px solid #ccc;border-radius:4px;text-align:center;">
+      </span>
       <button id="quick-apply-btn" style="height:28px;font-size:1em;padding:0 10px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">예비신청</button>
     </div>
   </div>
