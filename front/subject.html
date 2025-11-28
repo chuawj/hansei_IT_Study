@@ -31,10 +31,12 @@
         <select id="major-select" style="min-width:120px;height:32px;font-size:1em;"></select>
       </span>
       <span id="subject-search-area" style="display:none;align-items:center;gap:8px;">
+        <label style="font-weight:bold;">조회:</label>
         <input type="text" id="subject-code-input" placeholder="과목번호로 검색" style="height:20px;font-size:1em;width:120px;">
+        <label style="font-weight:bold;">과목:</label>
         <select id="subject-list-select" style="min-width:120px;height:32px;font-size:1em;"></select>
       </span>
-      <input type="text" id="subject-keyword" placeholder="과목명 검색" style="height:20px;font-size:1em;width:180px;">
+      <select id="subject-name-select" style="height:32px;font-size:1em;width:180px;margin-right:10px;"></select>
       <button id="search-btn" style="height:34px;font-size:1em;padding:0 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">조회</button>
     </div>
     <table class="table tableList2" style="overflow-x:unset;width:100%;margin-bottom:20px;">
@@ -45,6 +47,9 @@
       </thead>
       <tbody id="subject-list"></tbody>
     </table>
+    <footer style="padding:12px 8px; font-size:12px; color:#666; text-align:center; border-top:1px solid #eee; background:#f8f8f8; margin-top:20px;">
+      본 웹 콘텐츠의 일부는 한세대학교 수강신청 시스템에서 가져온 내용을 포함하고 있으며, 해당 콘텐츠 및 웹 페이지의 저작권은 한세대학교에 있습니다.
+    </footer>
   </div>
 </body>
 </html>

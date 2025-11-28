@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const typeButtons = document.getElementById('type-buttons');
   const typeSelect = document.getElementById('type-select');
   const majorArea = document.getElementById('major-area');
-  const subjectKeyword = document.getElementById('subject-keyword');
+  const subjectNameSelect = document.getElementById('subject-name-select');
   const subjectSearchArea = document.getElementById('subject-search-area');
 
   let currentTypeValue = '';
@@ -65,19 +65,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // 전체 UI 비활성화는 하지 않으므로 관련 함수 호출을 제거
   setTimeout(function(){ applySemester(currentSemester); }, 0);
 
-  // 이수구분 버튼 클릭 처리
-  document.querySelectorAll('.type-button').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.type-button').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      currentTypeValue = this.dataset.value || '';
-      const isMajorType = ['전공필수','전공선택','전공기초'].includes(currentTypeValue);
-      majorArea.style.display = isMajorType ? 'flex' : 'none';
-      subjectKeyword.style.display = isMajorType ? '' : 'none';
-      if (isMajorType) updateDeptOptions();
-      // 조회는 '조회' 버튼으로 실행됩니다 (자동 조회 비활성화)
+  // 이수구분 버튼(버튼형) 클릭 처리 — 요소가 존재할 때만 바인딩
+  const typeButtonEls = document.querySelectorAll('.type-button');
+  if (typeButtonEls && typeButtonEls.length) {
+    typeButtonEls.forEach(btn => {
+      btn.addEventListener('click', function() {
+        typeButtonEls.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentTypeValue = this.dataset.value || '';
+        const isMajorType = ['전공필수','전공선택','전공기초'].includes(currentTypeValue);
+        majorArea.style.display = isMajorType ? 'flex' : 'none';
+        if (subjectNameSelect) subjectNameSelect.style.display = isMajorType ? '' : 'none';
+        if (isMajorType) updateDeptOptions();
+      });
     });
-  });
+  }
 
   // 드롭다운 방식 이수구분이 있으면 onchange 연결 (원래 디자인 유지)
   if (typeSelect) {
@@ -85,10 +87,17 @@ document.addEventListener('DOMContentLoaded', function() {
       currentTypeValue = typeSelect.value || '';
       const isMajorType = ['전공필수','전공선택','전공기초'].includes(currentTypeValue);
       majorArea.style.display = isMajorType ? 'flex' : 'none';
-      subjectKeyword.style.display = isMajorType ? '' : 'none';
+      if (subjectNameSelect) subjectNameSelect.style.display = isMajorType ? '' : 'none';
       if (isMajorType) updateDeptOptions();
       // 조회는 '조회' 버튼으로 실행됩니다 (자동 조회 비활성화)
     };
+  }
+
+  // 보조: 만약 typeSelect에 값이 바뀌면, 버튼형이 있는 경우 버튼 상태 초기화
+  if (typeSelect) {
+    typeSelect.addEventListener('change', function(){
+      if (typeButtonEls && typeButtonEls.length) typeButtonEls.forEach(b=>b.classList.remove('active'));
+    });
   }
 
   function updateDeptOptions() {
@@ -98,6 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const opt = document.createElement('option'); opt.value = d.name; opt.textContent = d.name; deptSelect.appendChild(opt);
     }));
     updateMajorOptions();
+    // update subject name select to reflect new dept/major options
+    try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e) {}
   }
 
   function updateMajorOptions() {
@@ -111,13 +122,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }));
   }
 
-  deptSelect.onchange = function() { updateMajorOptions(); };
-  majorSelect.onchange = function() { /* 조회는 버튼으로 수행 */ };
+  deptSelect.onchange = function() { updateMajorOptions(); try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
+  majorSelect.onchange = function() { try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
 
   function fillSubjectListSelect() {
     const select = document.getElementById('subject-list-select'); if(!select) return;
     select.innerHTML = '';
-    (subjects||[]).forEach(subj => { const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; select.appendChild(opt); });
+    const nameSelect = document.getElementById('subject-name-select'); if (nameSelect) nameSelect.innerHTML = '';
+    (subjects||[]).forEach(subj => {
+      const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; select.appendChild(opt);
+      if (nameSelect) {
+        const opt2 = document.createElement('option'); opt2.value = subj.code; opt2.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt2);
+      }
+    });
+  }
+
+  // Populate subject-name-select with optional filters for dept/major
+  function fillSubjectNameSelect(filterDept, filterMajor) {
+    const nameSelect = document.getElementById('subject-name-select'); if (!nameSelect) return;
+    nameSelect.innerHTML = '';
+    const list = (subjects||[]).filter(s => {
+      if (filterDept && filterDept !== '' && s.dept !== filterDept) return false;
+      if (filterMajor && filterMajor !== '' && s.major !== filterMajor) return false;
+      return true;
+    });
+    // add an empty option for '전체'
+    const allOpt = document.createElement('option'); allOpt.value = ''; allOpt.textContent = '전체'; nameSelect.appendChild(allOpt);
+    list.forEach(subj => {
+      const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt);
+    });
   }
 
   categorySelect.onchange = function() {
@@ -134,9 +167,11 @@ document.addEventListener('DOMContentLoaded', function() {
     majorArea.style.display = 'none';
     if (typeButtons) typeButtons.style.display = 'none';
     if (typeSelect) typeSelect.style.display = 'none';
-    subjectKeyword.style.display = 'none';
+    if (subjectNameSelect) subjectNameSelect.style.display = 'none';
     subjectSearchArea.style.display = 'none';
-    document.querySelectorAll('.type-button').forEach(b=>b.classList.remove('active'));
+    // 초기화: 버튼형/셀렉트형 이수구분 상태 초기화
+    if (typeButtonEls && typeButtonEls.length) typeButtonEls.forEach(b=>b.classList.remove('active'));
+    if (typeSelect) typeSelect.value = '';
     currentTypeValue = '';
 
     if (categorySelect.value === 'basket') {
@@ -145,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (typeButtons) typeButtons.style.display = 'none';
       renderTable();
     } else if (categorySelect.value === 'major') {
-      majorArea.style.display = 'flex'; subjectKeyword.style.display = '';
+      majorArea.style.display = 'flex'; if (subjectNameSelect) subjectNameSelect.style.display = '';
       updateDeptOptions();
     } else if (categorySelect.value === 'subject') {
       subjectSearchArea.style.display = 'inline-flex'; fillSubjectListSelect();
@@ -160,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 입력 필드 변경은 내부 상태만 변경. 조회는 버튼 클릭으로 수행됩니다.
   if (document.getElementById('subject-code-input')) document.getElementById('subject-code-input').onkeyup = function(e){ /* no-op */ };
   if (document.getElementById('subject-list-select')) document.getElementById('subject-list-select').onchange = function() { /* no-op */ };
-  if (subjectKeyword) subjectKeyword.onkeyup = function(e){ /* no-op */ };
+  if (subjectNameSelect) subjectNameSelect.onchange = function(e){ /* no-op */ };
 
   function renderTable() {
     let filtered = [];
@@ -168,10 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cat === 'basket') {
       filtered = getBasket();
     } else if (cat === 'major') {
-      const dept = deptSelect.value, major = majorSelect.value;
+      const dept = (deptSelect||{}).value || '';
+      const major = (majorSelect||{}).value || '';
       filtered = (subjects||[]).filter(s => (!dept || s.dept===dept) && (!major || s.major===major));
-      const kw = subjectKeyword && subjectKeyword.value.trim().toLowerCase();
-      if (kw) filtered = filtered.filter(s => (s.name||'').toLowerCase().includes(kw) || (s.code||'').includes(kw));
+      const selectedCode = subjectNameSelect && subjectNameSelect.value;
+      if (selectedCode) filtered = filtered.filter(s => s.code === selectedCode);
     } else if (cat === 'subject') {
       const codeInput = (document.getElementById('subject-code-input')||{}).value || '';
       const selectCode = (document.getElementById('subject-list-select')||{}).value || '';
@@ -242,6 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (currentSemester === '1' && categorySelect.value === 'basket') {
     categorySelect.value = 'major';
   }
+  // populate subject selects so major/subject views have the options
+  try { fillSubjectListSelect(); } catch (e) { }
   categorySelect.dispatchEvent(new Event('change'));
   QueueModal.showEnter(function(){ renderTable(); renderRegisterTable(); });
 });

@@ -52,6 +52,7 @@ window.onload = function() {
         });
       });
       updateMajorOptions();
+      try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e) {}
     }
     function updateMajorOptions() {
       majorSelect.innerHTML = '';
@@ -70,7 +71,8 @@ window.onload = function() {
         const opt = document.createElement('option'); opt.value = ''; opt.textContent = '전체'; majorSelect.appendChild(opt);
       }
     }
-    deptSelect.onchange = updateMajorOptions;
+    deptSelect.onchange = function() { updateMajorOptions(); try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
+    majorSelect.onchange = function() { try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
     updateDeptOptions();
 
     function populateTypeOptions() {
@@ -91,63 +93,121 @@ window.onload = function() {
     }
     populateTypeOptions();
 
+    const typeButtonsContainer = document.getElementById('type-buttons');
+    const typeButtonEls = document.querySelectorAll('.type-button');
+
+    if (typeButtonEls && typeButtonEls.length) {
+      typeButtonEls.forEach(btn => {
+        btn.addEventListener('click', function() {
+          typeButtonEls.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const v = this.dataset.value || '';
+          currentTypeValue = v;
+          if (typeSelect) {
+            typeSelect.value = v;
+            typeSelect.dispatchEvent(new Event('change'));
+          } else {
+            const isMajorType = ['전공필수','전공선택','전공기초'].includes(v);
+            if (majorArea) majorArea.style.display = isMajorType ? '' : 'none';
+            const nameSelect = document.getElementById('subject-name-select');
+            if (nameSelect) nameSelect.style.display = isMajorType ? '' : 'none';
+            if (isMajorType) updateDeptOptions();
+          }
+        });
+      });
+    }
+
     if (typeSelect) {
       typeSelect.onchange = function() {
         const val = typeSelect.value || '';
+        currentTypeValue = val;
         const isMajorType = ['전공필수','전공선택','전공기초'].includes(val);
-        majorArea.style.display = isMajorType ? '' : 'none';
-        const kw = document.getElementById('subject-keyword');
-        if (kw) kw.style.display = isMajorType ? '' : 'none';
+        if (majorArea) majorArea.style.display = isMajorType ? '' : 'none';
+        const nameSelect = document.getElementById('subject-name-select');
+        if (nameSelect) nameSelect.style.display = isMajorType ? '' : 'none';
         if (isMajorType) updateDeptOptions();
+        if (typeButtonEls && typeButtonEls.length) typeButtonEls.forEach(b=>b.classList.remove('active'));
       };
     }
 
     function fillSubjectListSelect() {
       const select = document.getElementById('subject-list-select'); if(!select) return;
       select.innerHTML = '';
+      const nameSelect = document.getElementById('subject-name-select'); if (nameSelect) nameSelect.innerHTML = '';
       (subjects||[]).forEach(subj => {
         const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; select.appendChild(opt);
+        if (nameSelect) {
+          const opt2 = document.createElement('option'); opt2.value = subj.code; opt2.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt2);
+        }
+      });
+    }
+
+    function fillSubjectNameSelect(filterDept, filterMajor) {
+      const nameSelect = document.getElementById('subject-name-select'); if (!nameSelect) return;
+      nameSelect.innerHTML = '';
+      const list = (subjects||[]).filter(s => {
+        if (filterDept && filterDept !== '' && s.dept !== filterDept) return false;
+        if (filterMajor && filterMajor !== '' && s.major !== filterMajor) return false;
+        return true;
+      });
+      const allOpt = document.createElement('option'); allOpt.value = ''; allOpt.textContent = '전체'; nameSelect.appendChild(allOpt);
+      list.forEach(subj => {
+        const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt);
       });
     }
 
     categorySelect.onchange = function() {
+      const nameSelect = document.getElementById('subject-name-select');
       if (categorySelect.value === 'major') {
         majorArea.style.display = '';
         typeSelect.style.display = 'none';
-        const kw = document.getElementById('subject-keyword'); if (kw) kw.style.display = '';
+        if (nameSelect) nameSelect.style.display = '';
         const sarea = document.getElementById('subject-search-area'); if (sarea) sarea.style.display = 'none';
+        try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e) {}
       } else if (categorySelect.value === 'subject') {
         majorArea.style.display = 'none';
         typeSelect.style.display = 'none';
-        const kw = document.getElementById('subject-keyword'); if (kw) kw.style.display = 'none';
+        if (nameSelect) nameSelect.style.display = 'none';
         const sarea = document.getElementById('subject-search-area'); if (sarea) { sarea.style.display = 'inline-flex'; fillSubjectListSelect(); }
       } else if (categorySelect.value === 'type') {
         majorArea.style.display = 'none';
         typeSelect.style.display = '';
-        const kw = document.getElementById('subject-keyword'); if (kw) kw.style.display = 'none';
+        if (nameSelect) nameSelect.style.display = 'none';
         const sarea = document.getElementById('subject-search-area'); if (sarea) sarea.style.display = 'none';
       }
     };
     categorySelect.dispatchEvent(new Event('change'));
 
+    let currentTypeValue = '';
     function renderTable() {
       let filtered = (subjects||[]);
-      if (categorySelect.value === 'major') {
-        const dept = deptSelect.value; const major = majorSelect.value;
-        filtered = filtered.filter(s => (dept === '' || s.dept === dept) && (major === '' || s.major === major));
-      } else if (categorySelect.value === 'subject') {
-        const codeInput = (document.getElementById('subject-code-input')||{}).value.trim();
-        const selectCode = (document.getElementById('subject-list-select')||{}).value;
+      const cat = (categorySelect||{}).value || '';
+      if (cat === 'major') {
+        const dept = (deptSelect||{}).value || '';
+        const major = (majorSelect||{}).value || '';
+        filtered = filtered.filter(s => (!dept || s.dept === dept) && (!major || s.major === major));
+      } else if (cat === 'subject') {
+        const codeInput = (document.getElementById('subject-code-input')||{}).value.trim() || '';
+        const selectCode = (document.getElementById('subject-list-select')||{}).value || '';
         if (codeInput) filtered = (subjects||[]).filter(s => s.code.includes(codeInput));
         else if (selectCode) filtered = (subjects||[]).filter(s => s.code === selectCode);
-      } else if (categorySelect.value === 'type') {
-        const type = typeSelect.value; if (type) filtered = filtered.filter(s => s.type === type);
+        else filtered = subjects || [];
+      } else if (cat === 'type') {
+        const typeVal = currentTypeValue || (typeSelect ? typeSelect.value : '');
+        if (typeVal) filtered = filtered.filter(s => s.type === typeVal);
+        if (['전공필수','전공선택','전공기초'].includes(typeVal)) {
+          const dept = (deptSelect||{}).value || '';
+          const major = (majorSelect||{}).value || '';
+          if (dept) filtered = filtered.filter(s => s.dept === dept);
+          if (major) filtered = filtered.filter(s => s.major === major);
+        }
       }
-      const tbody = document.getElementById('basket-list'); if(!tbody) return; tbody.innerHTML = '';
+      const tbody = document.getElementById('basket-list'); if(!tbody) return;
+      tbody.innerHTML = '';
       filtered.forEach((s,i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${i+1}</td><td>${s.dept||''}</td><td>${s.major||''}</td><td>${s.year||''}</td><td>${s.name||''}</td><td>${s.code||''}</td><td>${s.type||''}</td><td>${s.credit||''}</td><td>${s.cap !== undefined ? s.cap : 30}</td><td><button class='btn apply'>신청</button></td>`;
-          tr.querySelector('.apply').onclick = function() { addToBasket(s); };
+        tr.querySelector('.apply').onclick = function() { addToBasket(s); };
         tbody.appendChild(tr);
       });
     }
@@ -173,7 +233,7 @@ window.onload = function() {
 
     if (document.getElementById('subject-code-input')) document.getElementById('subject-code-input').onkeyup = function(e){};
     if (document.getElementById('subject-list-select')) document.getElementById('subject-list-select').onchange = function(){};
-    if (document.getElementById('subject-keyword')) document.getElementById('subject-keyword').onkeyup = function(e){};
+    if (document.getElementById('subject-name-select')) document.getElementById('subject-name-select').onchange = function(){};
 
     function getBasket() { return JSON.parse(localStorage.getItem('basketList')||'[]'); }
     function setBasket(list) { localStorage.setItem('basketList', JSON.stringify(list)); }
