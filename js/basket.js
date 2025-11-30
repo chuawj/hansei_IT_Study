@@ -1,5 +1,4 @@
 window.onload = function() {
-  // 학기 변경에 따라 UI를 즉시 활성/비활성화하는 로직
   function disableBasketUI(showToast) {
     console.log('[basket] disableBasketUI called, showToast=', !!showToast);
     if (showToast && typeof Toast !== 'undefined') Toast.show('1학년 1학기에는 예비수강신청 기능을 사용할 수 없습니다.');
@@ -243,7 +242,6 @@ window.onload = function() {
     renderBasketTable();
   }
 
-  // 초기 학기 체크 및 초기화/비활성화
   const currentSemester = localStorage.getItem('currentSemester') || '2';
   if (currentSemester === '1') {
     disableBasketUI(true);
@@ -252,7 +250,6 @@ window.onload = function() {
     initBasket();
   }
 
-  // 부모 창에서 학기 변경 시 즉시 반영
     window.addEventListener('storage', function(e) {
       if (e.key === 'currentSemester') {
         if (e.newValue === '1') {
@@ -263,7 +260,7 @@ window.onload = function() {
         }
       }
     });
-  // postMessage로 부모 창에서 직접 전달할 때도 처리 (즉시 반영)
+
   window.addEventListener('message', function(ev) {
     try {
       const d = ev.data || {};

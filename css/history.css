@@ -8,7 +8,6 @@ body { margin:0;
         box-sizing:border-box; 
         background:transparent; }
 h2 { margin:0 0 12px 0; font-size:18px; }
-/* make table fill available width */
 table { width:100%; 
     border-collapse:collapse; 
     margin-bottom:16px; }
@@ -23,7 +22,6 @@ th { background:#f7f9fb; color:#0b3148; font-weight:600; }
        cursor:pointer; }
 .btn:disabled { background:#aaa; }
 
-/* small screens: allow horizontal scroll when needed */
 @media (max-width:800px) {
   .wrap { padding:10px; }
   table { display:block; width:100%; overflow:auto; }

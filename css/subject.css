@@ -3,7 +3,6 @@ table.tableList2, .tableList2 th, .tableList2 td {
   padding: 12px 8px !important;
 }
 
-/* Search bar styling to match provided design */
 .search-bar {
   display:flex;
   align-items:center;

@@ -153,7 +153,6 @@ body {
 }
 .btn-danger.small:hover { background:#c62828; }
 
-/* 사이드바용 버튼 (본수강신청 바로가기) */
 .sidebar-btn {
     display:block;
     width:100%;
@@ -184,14 +183,12 @@ body {
     overflow:hidden; 
 }
 
-/* 반응형 설정 */
 @media (max-width: 1000px) {
   .side-col { width:180px; padding:12px 10px; }
   .nav .tab-btn { font-size:11px; padding:0 8px; }
 }
 .btn-danger.small:hover { background:#c62828; }
 
-/* 사이드바용 버튼 (본수강신청 바로가기) */
 .sidebar-btn {
     display:inline-block;
     width:100%;
@@ -217,7 +214,6 @@ body {
     overflow:hidden; 
 }
 
-/* 반응형 설정 */
 @media (max-width: 1000px) {
   .main-content { padding:12px; }
   .nav .tab-btn { font-size:11px; padding:8px 4px; }

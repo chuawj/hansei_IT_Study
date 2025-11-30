@@ -1,11 +1,9 @@
 window.onload = function() {
-    // 카테고리/학부/학과 옵션 생성
     const categorySelect = document.getElementById('category-select');
     const deptSelect = document.getElementById('dept-select');
     const majorSelect = document.getElementById('major-select');
     const typeSelect = document.getElementById('type-select');
     const majorArea = document.getElementById('major-area');
-    // 학부/학과 옵션
     function updateDeptOptions() {
       deptSelect.innerHTML = '';
       categoryData.forEach(cat => {
@@ -42,7 +40,6 @@ window.onload = function() {
     deptSelect.onchange = function() { updateMajorOptions(); try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
     majorSelect.onchange = function() { try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
     updateDeptOptions();
-    // populate type select from subjects data in a preferred order
     function populateTypeOptions() {
       typeSelect.innerHTML = '';
       const preferred = ['전공필수','전공선택','전공기초','교양필수','교양선택','채플','연계필수','연계선택'];
@@ -50,17 +47,14 @@ window.onload = function() {
       const types = Array.from(typesSet);
       const optAll = document.createElement('option'); optAll.value = ''; optAll.textContent = '전체';
       typeSelect.appendChild(optAll);
-      // add preferred order first if present
       preferred.forEach(p => {
         if (typesSet.has(p)) {
           const opt = document.createElement('option'); opt.value = p; opt.textContent = p;
           typeSelect.appendChild(opt);
-          // remove from types array
           const idx = types.indexOf(p); if (idx !== -1) types.splice(idx,1);
           typesSet.delete(p);
         }
       });
-      // append any remaining types sorted
       types.sort();
       types.forEach(t => {
         const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
@@ -68,7 +62,6 @@ window.onload = function() {
       });
     }
     populateTypeOptions();
-    // 이수구분 선택 시 전공 관련이면 학부/학과 영역과 과목명 검색 보이기
     const typeButtonsContainer = document.getElementById('type-buttons');
     const typeButtonEls = document.querySelectorAll('.type-button');
 
@@ -198,10 +191,8 @@ window.onload = function() {
       setBasket(list);
     }
   document.getElementById('search-btn').onclick = renderTable;
-  // 입력 변경 시 즉시 조회되지 않도록 Enter/onchange 자동 실행을 비활성화.
   if (document.getElementById('subject-code-input')) document.getElementById('subject-code-input').onkeyup = function(e){ /* no-op */ };
   if (document.getElementById('subject-list-select')) document.getElementById('subject-list-select').onchange = function(){ /* no-op */ };
   if (document.getElementById('subject-name-select')) document.getElementById('subject-name-select').onchange = function(e){ /* no-op */ };
-  // Note: do NOT auto-run renderTable on load or on input change.
-  // Users must click '조회' to populate the list.
+
 }

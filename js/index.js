@@ -1,9 +1,7 @@
 window.onload = function() {
-    // 학기 선택 기능
     let currentSemester = localStorage.getItem('currentSemester') || '2';
     document.getElementById('semester-' + currentSemester).checked = true;
     
-    // 전역으로 학기 정보 제공
     window.currentSemester = currentSemester;
     
     document.querySelectorAll('input[name="semester"]').forEach(radio => {
@@ -14,7 +12,6 @@ window.onload = function() {
       };
     });
     
-    // 대기열 기능 토글
     let queueEnabled = true;
     if(localStorage.getItem('queueEnabled')!==null) {
       queueEnabled = localStorage.getItem('queueEnabled')==='true';
