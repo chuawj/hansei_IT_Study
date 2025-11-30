@@ -63,7 +63,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // DOM이 준비되면 초기 적용 (학기별 UI 적용 포함)
   // 전체 UI 비활성화는 하지 않으므로 관련 함수 호출을 제거
-  setTimeout(function(){ applySemester(currentSemester); }, 0);
+  setTimeout(function(){ 
+    applySemester(currentSemester);
+    // 페이지 로드 시 테이블 비우기
+    const tbody = document.getElementById('reg-list');
+    if(tbody) tbody.innerHTML = '';
+  }, 0);
 
   // 이수구분 버튼(버튼형) 클릭 처리 — 요소가 존재할 때만 바인딩
   const typeButtonEls = document.querySelectorAll('.type-button');
