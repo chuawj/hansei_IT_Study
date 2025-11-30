@@ -64,6 +64,12 @@ body {
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
 }
 
+/* Disabled-looking tab (still receives events so we can show modal) */
+.nav .tab-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* 메인 콘텐츠 래퍼 */
 .main-content { 
     width:100%; 

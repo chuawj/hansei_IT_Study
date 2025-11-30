@@ -1,6 +1,5 @@
 window.onload = function() {
   function disableBasketUI(showToast) {
-    console.log('[basket] disableBasketUI called, showToast=', !!showToast);
     if (showToast && typeof Toast !== 'undefined') Toast.show('1학년 1학기에는 예비수강신청 기능을 사용할 수 없습니다.');
     document.querySelectorAll('select, input, button').forEach(el => {
       if (el.id !== 'toast') {
@@ -16,7 +15,6 @@ window.onload = function() {
   }
 
   function enableBasketUI() {
-    console.log('[basket] enableBasketUI called');
     try { const t = document.getElementById('toast'); if (t) { t.classList.remove('show'); t.textContent = ''; } } catch(e){}
     document.querySelectorAll('select, input, button').forEach(el => {
       if (el.id !== 'toast') {

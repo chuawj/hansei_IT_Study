@@ -20,6 +20,7 @@ window.renderGlobalTimer = function(containerId) {
   }
   let openTime = null;
   let timerInterval = null;
+  window.globalOpenTime = window.globalOpenTime || null;
   async function updateServerTimeAndTimer() {
     const now = await fetchNaverTime();
     document.getElementById('server-time-global').textContent = '현재 시각: ' + now.toLocaleString();
@@ -28,19 +29,23 @@ window.renderGlobalTimer = function(containerId) {
       if(diff > 0) {
         document.getElementById('timer-remaining-global').textContent = '남은 시간: ' + Math.floor(diff/1000) + '초';
         window.globalTimerActive = false;
+        window.globalOpenTime = openTime;
       } else {
         document.getElementById('timer-remaining-global').textContent = '수강신청 가능!';
         window.globalTimerActive = true;
+        window.globalOpenTime = openTime;
       }
     } else {
       document.getElementById('timer-remaining-global').textContent = '';
       window.globalTimerActive = true;
+      window.globalOpenTime = null;
     }
   }
   document.getElementById('set-timer-btn-global').onclick = function() {
     const val = document.getElementById('open-time-global').value;
     if(!val) { alert('오픈 시간을 입력하세요!'); return; }
     openTime = new Date(val);
+    window.globalOpenTime = openTime;
     if(timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(updateServerTimeAndTimer, 1000);
     updateServerTimeAndTimer();

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
             categorySelect.value = 'basket';
             categorySelect.dispatchEvent(new Event('change'));
           }
-        } catch (e) { console.warn('[register] failed to auto-select basket', e); }
+        } catch (e) { /* ignore auto-select failure */ }
       }
     }
   }
@@ -161,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
   categorySelect.onchange = function() {
     // 1학기에서 예비수강 선택 시도 방지
     if (currentSemester === '1' && categorySelect.value === 'basket') {
-      console.warn('⚠️ 1학기에는 예비수강 선택 불가');
       Toast.show('1학기에는 예비수강신청 기능을 사용할 수 없습니다.');
       categorySelect.value = 'major';
       categorySelect.onchange.call(categorySelect);
