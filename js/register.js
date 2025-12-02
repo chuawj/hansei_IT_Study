@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // add an empty option for '전체'
     const allOpt = document.createElement('option'); allOpt.value = ''; allOpt.textContent = '전체'; nameSelect.appendChild(allOpt);
     list.forEach(subj => {
-      const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `[${subj.code}] ${subj.name}`; nameSelect.appendChild(opt);
+      const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt);
     });
   }
 
