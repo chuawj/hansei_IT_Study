@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }));
     updateMajorOptions();
     // update subject name select to reflect new dept/major options
-    try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e) {}
+    try { const tf = (currentTypeValue && currentTypeValue) ? currentTypeValue : (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e) {}
   }
 
   function updateMajorOptions() {
@@ -127,8 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }));
   }
 
-  deptSelect.onchange = function() { updateMajorOptions(); try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
-  majorSelect.onchange = function() { try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
+  deptSelect.onchange = function() { updateMajorOptions(); try { const tf = (currentTypeValue && currentTypeValue) ? currentTypeValue : (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e){} };
+  majorSelect.onchange = function() { try { const tf = (currentTypeValue && currentTypeValue) ? currentTypeValue : (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e){} };
 
   function fillSubjectListSelect() {
     const select = document.getElementById('subject-list-select'); if(!select) return;
@@ -142,19 +142,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Populate subject-name-select with optional filters for dept/major
-  function fillSubjectNameSelect(filterDept, filterMajor) {
+  // Populate subject-name-select with optional filters for dept/major/type
+  function fillSubjectNameSelect(filterDept, filterMajor, filterType) {
     const nameSelect = document.getElementById('subject-name-select'); if (!nameSelect) return;
     nameSelect.innerHTML = '';
     const list = (subjects||[]).filter(s => {
       if (filterDept && filterDept !== '' && s.dept !== filterDept) return false;
       if (filterMajor && filterMajor !== '' && s.major !== filterMajor) return false;
+      if (filterType && filterType !== '') {
+        const tv = (filterType||'').toString().trim();
+        if (((s.type||'').toString().trim() !== tv)) return false;
+      }
       return true;
     });
     // add an empty option for '전체'
     const allOpt = document.createElement('option'); allOpt.value = ''; allOpt.textContent = '전체'; nameSelect.appendChild(allOpt);
     list.forEach(subj => {
-      const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt);
+      const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `[${subj.code}] ${subj.name}`; nameSelect.appendChild(opt);
     });
   }
 
@@ -203,6 +207,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function renderTable() {
     let filtered = [];
+    // DEBUG: 조회 시 필터 상태 확인
+    try {
+      const dbgCat = (categorySelect||{}).value || '';
+      const dbgDept = (deptSelect||{}).value || '';
+      const dbgMajor = (majorSelect||{}).value || '';
+      const dbgSelectedName = (subjectNameSelect||{}).value || '';
+      const dbgType = currentTypeValue || (typeSelect ? typeSelect.value : '');
+      console.log('[DBG][register] renderTable start', {category: dbgCat, dept: dbgDept, major: dbgMajor, selectedNameCode: dbgSelectedName, type: dbgType, totalSubjects: (subjects||[]).length});
+    } catch(e) { console.warn('[DBG][register] renderTable debug failed', e); }
     const cat = categorySelect.value;
     if (cat === 'basket') {
       filtered = getBasket();
@@ -220,16 +233,23 @@ document.addEventListener('DOMContentLoaded', function() {
       else filtered = subjects || [];
     } else if (cat === 'type') {
       filtered = subjects||[];
-      if (currentTypeValue) filtered = filtered.filter(s => s.type === currentTypeValue);
+      if (currentTypeValue) {
+        const tv = (currentTypeValue||'').toString().trim();
+        filtered = filtered.filter(s => ((s.type||'').toString().trim() === tv));
+      }
       if (['전공필수','전공선택','전공기초'].includes(currentTypeValue)) {
         const dept = deptSelect.value, major = majorSelect.value;
         if (dept) filtered = filtered.filter(s => s.dept === dept);
         if (major) filtered = filtered.filter(s => s.major === major);
       }
+      // subject-name-select의 값이 있으면 추가 필터링
+      const selectedCode = subjectNameSelect && subjectNameSelect.value;
+      if (selectedCode) filtered = filtered.filter(s => s.code === selectedCode);
     }
 
     const tbody = document.getElementById('reg-list'); if(!tbody) return;
     tbody.innerHTML = '';
+    console.log('[DBG][register] renderTable filtered count:', filtered.length);
     filtered.forEach((s,i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${i+1}</td><td>${s.dept||''}</td><td>${s.major||''}</td><td>${s.year||''}</td><td>${s.name||''}</td><td>${s.code||''}</td><td>${s.type||''}</td><td>${s.credit||''}</td><td>${s.cap!==undefined? s.cap : ''}</td><td><button class='btn apply'>신청</button></td>`;

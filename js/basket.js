@@ -38,6 +38,7 @@ window.onload = function() {
     const majorSelect = document.getElementById('major-select');
     const typeSelect = document.getElementById('type-select');
     const majorArea = document.getElementById('major-area');
+    let currentTypeValue = '';
 
     function updateDeptOptions() {
       deptSelect.innerHTML = '';
@@ -49,7 +50,7 @@ window.onload = function() {
         });
       });
       updateMajorOptions();
-      try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e) {}
+      try { const tf = currentTypeValue || (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e) {}
     }
     function updateMajorOptions() {
       majorSelect.innerHTML = '';
@@ -68,8 +69,8 @@ window.onload = function() {
         const opt = document.createElement('option'); opt.value = ''; opt.textContent = '전체'; majorSelect.appendChild(opt);
       }
     }
-    deptSelect.onchange = function() { updateMajorOptions(); try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
-    majorSelect.onchange = function() { try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e){} };
+    deptSelect.onchange = function() { updateMajorOptions(); try { const tf = currentTypeValue || (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e){} };
+    majorSelect.onchange = function() { try { const tf = currentTypeValue || (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e){} };
     updateDeptOptions();
 
     function populateTypeOptions() {
@@ -139,17 +140,21 @@ window.onload = function() {
       });
     }
 
-    function fillSubjectNameSelect(filterDept, filterMajor) {
+    function fillSubjectNameSelect(filterDept, filterMajor, filterType) {
       const nameSelect = document.getElementById('subject-name-select'); if (!nameSelect) return;
       nameSelect.innerHTML = '';
       const list = (subjects||[]).filter(s => {
         if (filterDept && filterDept !== '' && s.dept !== filterDept) return false;
         if (filterMajor && filterMajor !== '' && s.major !== filterMajor) return false;
+        if (filterType && filterType !== '') {
+          const tv = (filterType||'').toString().trim();
+          if (((s.type||'').toString().trim() !== tv)) return false;
+        }
         return true;
       });
       const allOpt = document.createElement('option'); allOpt.value = ''; allOpt.textContent = '전체'; nameSelect.appendChild(allOpt);
       list.forEach(subj => {
-        const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `${subj.name} [${subj.code}]`; nameSelect.appendChild(opt);
+        const opt = document.createElement('option'); opt.value = subj.code; opt.textContent = `[${subj.code}] ${subj.name}`; nameSelect.appendChild(opt);
       });
     }
 
@@ -160,7 +165,7 @@ window.onload = function() {
         typeSelect.style.display = 'none';
         if (nameSelect) nameSelect.style.display = '';
         const sarea = document.getElementById('subject-search-area'); if (sarea) sarea.style.display = 'none';
-        try { fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || ''); } catch(e) {}
+        try { const tf = currentTypeValue || (typeSelect ? (typeSelect.value||'') : ''); fillSubjectNameSelect((deptSelect||{}).value || '', (majorSelect||{}).value || '', tf); } catch(e) {}
       } else if (categorySelect.value === 'subject') {
         majorArea.style.display = 'none';
         typeSelect.style.display = 'none';
@@ -174,15 +179,27 @@ window.onload = function() {
       }
     };
     categorySelect.dispatchEvent(new Event('change'));
-
-    let currentTypeValue = '';
     function renderTable() {
       let filtered = (subjects||[]);
+      // DEBUG: 조회 시 필터 상태 확인
+      try {
+        const dbgCat = (categorySelect||{}).value || '';
+        const dbgDept = (deptSelect||{}).value || '';
+        const dbgMajor = (majorSelect||{}).value || '';
+        const dbgSelectedName = (document.getElementById('subject-name-select')||{}).value || '';
+        const dbgType = currentTypeValue || (typeSelect ? typeSelect.value : '');
+        console.log('[DBG][basket] renderTable start', {category: dbgCat, dept: dbgDept, major: dbgMajor, selectedNameCode: dbgSelectedName, type: dbgType, totalSubjects: (subjects||[]).length});
+      } catch(e) { console.warn('[DBG][basket] renderTable debug failed', e); }
       const cat = (categorySelect||{}).value || '';
       if (cat === 'major') {
         const dept = (deptSelect||{}).value || '';
         const major = (majorSelect||{}).value || '';
         filtered = filtered.filter(s => (!dept || s.dept === dept) && (!major || s.major === major));
+        // subject-name-select의 값이 있으면 추가 필터링
+        const selectedCode = (document.getElementById('subject-name-select')||{}).value || '';
+        if (selectedCode) {
+          filtered = filtered.filter(s => s.code === selectedCode);
+        }
       } else if (cat === 'subject') {
         const codeInput = (document.getElementById('subject-code-input')||{}).value.trim() || '';
         const selectCode = (document.getElementById('subject-list-select')||{}).value || '';
@@ -191,16 +208,25 @@ window.onload = function() {
         else filtered = subjects || [];
       } else if (cat === 'type') {
         const typeVal = currentTypeValue || (typeSelect ? typeSelect.value : '');
-        if (typeVal) filtered = filtered.filter(s => s.type === typeVal);
+        if (typeVal) {
+          const tv = (typeVal||'').toString().trim();
+          filtered = filtered.filter(s => ((s.type||'').toString().trim() === tv));
+        }
         if (['전공필수','전공선택','전공기초'].includes(typeVal)) {
           const dept = (deptSelect||{}).value || '';
           const major = (majorSelect||{}).value || '';
           if (dept) filtered = filtered.filter(s => s.dept === dept);
           if (major) filtered = filtered.filter(s => s.major === major);
         }
+        // subject-name-select의 값이 있으면 추가 필터링
+        const selectedCode = (document.getElementById('subject-name-select')||{}).value || '';
+        if (selectedCode) {
+          filtered = filtered.filter(s => s.code === selectedCode);
+        }
       }
       const tbody = document.getElementById('basket-list'); if(!tbody) return;
       tbody.innerHTML = '';
+      console.log('[DBG][basket] renderTable filtered count:', filtered.length);
       filtered.forEach((s,i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${i+1}</td><td>${s.dept||''}</td><td>${s.major||''}</td><td>${s.year||''}</td><td>${s.name||''}</td><td>${s.code||''}</td><td>${s.type||''}</td><td>${s.credit||''}</td><td>${s.cap !== undefined ? s.cap : 30}</td><td><button class='btn apply'>신청</button></td>`;
