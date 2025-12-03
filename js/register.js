@@ -79,9 +79,13 @@ document.addEventListener('DOMContentLoaded', function() {
         this.classList.add('active');
         currentTypeValue = this.dataset.value || '';
         const isMajorType = ['전공필수','전공선택','전공기초'].includes(currentTypeValue);
+        const isGeneralType = ['교양필수','교양선택'].includes(currentTypeValue);
         majorArea.style.display = isMajorType ? 'flex' : 'none';
-        if (subjectNameSelect) subjectNameSelect.style.display = isMajorType ? '' : 'none';
+        if (subjectNameSelect) subjectNameSelect.style.display = (isMajorType || isGeneralType) ? '' : 'none';
         if (isMajorType) updateDeptOptions();
+        if (isGeneralType) {
+          try { fillSubjectNameSelect('', '', currentTypeValue); } catch(e) {}
+        }
       });
     });
   }
@@ -91,9 +95,13 @@ document.addEventListener('DOMContentLoaded', function() {
     typeSelect.onchange = function() {
       currentTypeValue = typeSelect.value || '';
       const isMajorType = ['전공필수','전공선택','전공기초'].includes(currentTypeValue);
+      const isGeneralType = ['교양필수','교양선택'].includes(currentTypeValue);
       majorArea.style.display = isMajorType ? 'flex' : 'none';
-      if (subjectNameSelect) subjectNameSelect.style.display = isMajorType ? '' : 'none';
+      if (subjectNameSelect) subjectNameSelect.style.display = (isMajorType || isGeneralType) ? '' : 'none';
       if (isMajorType) updateDeptOptions();
+      if (isGeneralType) {
+        try { fillSubjectNameSelect('', '', currentTypeValue); } catch(e) {}
+      }
       // 조회는 '조회' 버튼으로 실행됩니다 (자동 조회 비활성화)
     };
   }
@@ -242,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dept) filtered = filtered.filter(s => s.dept === dept);
         if (major) filtered = filtered.filter(s => s.major === major);
       }
-      // subject-name-select의 값이 있으면 추가 필터링
+      // subject-name-select의 값이 있으면 추가 필터링 (교양 이수구분 포함)
       const selectedCode = subjectNameSelect && subjectNameSelect.value;
       if (selectedCode) filtered = filtered.filter(s => s.code === selectedCode);
     }

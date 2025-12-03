@@ -106,10 +106,14 @@ window.onload = function() {
             typeSelect.dispatchEvent(new Event('change'));
           } else {
             const isMajorType = ['전공필수','전공선택','전공기초'].includes(v);
+            const isGeneralType = ['교양필수','교양선택'].includes(v);
             if (majorArea) majorArea.style.display = isMajorType ? '' : 'none';
             const nameSelect = document.getElementById('subject-name-select');
-            if (nameSelect) nameSelect.style.display = isMajorType ? '' : 'none';
+            if (nameSelect) nameSelect.style.display = (isMajorType || isGeneralType) ? '' : 'none';
             if (isMajorType) updateDeptOptions();
+            if (isGeneralType) {
+              try { fillSubjectNameSelect('', '', v); } catch(e) {}
+            }
           }
         });
       });
@@ -120,10 +124,14 @@ window.onload = function() {
         const val = typeSelect.value || '';
         currentTypeValue = val;
         const isMajorType = ['전공필수','전공선택','전공기초'].includes(val);
+        const isGeneralType = ['교양필수','교양선택'].includes(val);
         if (majorArea) majorArea.style.display = isMajorType ? '' : 'none';
         const nameSelect = document.getElementById('subject-name-select');
-        if (nameSelect) nameSelect.style.display = isMajorType ? '' : 'none';
+        if (nameSelect) nameSelect.style.display = (isMajorType || isGeneralType) ? '' : 'none';
         if (isMajorType) updateDeptOptions();
+        if (isGeneralType) {
+          try { fillSubjectNameSelect('', '', val); } catch(e) {}
+        }
         if (typeButtonEls && typeButtonEls.length) typeButtonEls.forEach(b=>b.classList.remove('active'));
       };
     }
@@ -218,7 +226,7 @@ window.onload = function() {
           if (dept) filtered = filtered.filter(s => s.dept === dept);
           if (major) filtered = filtered.filter(s => s.major === major);
         }
-        // subject-name-select의 값이 있으면 추가 필터링
+        // subject-name-select의 값이 있으면 추가 필터링 (교양 이수구분 포함)
         const selectedCode = (document.getElementById('subject-name-select')||{}).value || '';
         if (selectedCode) {
           filtered = filtered.filter(s => s.code === selectedCode);
