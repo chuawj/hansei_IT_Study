@@ -40,6 +40,17 @@
           <label for="queue-toggle" style="cursor:pointer; font-weight:600; margin:0;">대기열</label>
           <span id="queue-status" style="color:#888; margin-left:auto;"></span>
         </div>
+        <div id="queue-selector" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid #ddd;">
+          <div style="font-weight:600; color:#333; margin-bottom:6px; font-size:10px;">대기열 선택:</div>
+          <select id="queue-select" style="width:100%; padding:4px; border:1px solid #ccc; border-radius:2px; font-size:11px; cursor:pointer;">
+            <option value="">선택 안함</option>
+            <option value="1">1순위 - 매우 빠름</option>
+            <option value="2">2순위 - 빠름</option>
+            <option value="3">3순위 - 보통</option>
+            <option value="4">4순위 - 느림</option>
+            <option value="5">5순위 - 매우 느림</option>
+          </select>
+        </div>
       </div>
 
       <div style="margin-top:12px; padding:10px; border:1px solid #ddd; background:#f3fbff; border-radius:2px; font-size:11px;">

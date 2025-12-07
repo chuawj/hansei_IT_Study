@@ -21,13 +21,28 @@ window.onload = function() {
       }
       const queueToggle = document.getElementById('queue-toggle');
       const queueStatus = document.getElementById('queue-status');
+      const queueSelector = document.getElementById('queue-selector');
+      const queueSelect = document.getElementById('queue-select');
+      
       if(queueToggle && queueStatus) {
         queueToggle.checked = queueEnabled;
         queueStatus.textContent = queueEnabled ? 'ON' : 'OFF';
+        if (queueSelector) queueSelector.style.display = queueEnabled ? 'block' : 'none';
+        
         queueToggle.onchange = function() {
           queueEnabled = queueToggle.checked;
           localStorage.setItem('queueEnabled', queueEnabled);
           if (queueStatus) queueStatus.textContent = queueEnabled ? 'ON' : 'OFF';
+          if (queueSelector) queueSelector.style.display = queueEnabled ? 'block' : 'none';
+          if (queueSelect && !queueEnabled) queueSelect.value = '';
+        };
+      }
+      
+      if (queueSelect) {
+        const savedQueue = localStorage.getItem('selectedQueue') || '';
+        queueSelect.value = savedQueue;
+        queueSelect.onchange = function() {
+          localStorage.setItem('selectedQueue', this.value);
         };
       }
     const tabMap = {
